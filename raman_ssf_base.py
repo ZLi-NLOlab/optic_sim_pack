@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import raman_aux as ra
 import phase_matching_aux as pa
-import osp_param_file_generator as ofg
-ofg.param_create()
+
+if __name__ == '__main__':
+    import osp_param_file_generator as ofg
 
 from time import time as time 
 from functools import partial
