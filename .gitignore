@@ -1,0 +1,6 @@
+__pycache__/
+*.params
+ssf_save/ 
+supe/ 
+osp_param_file_generator.py
+raman_profile_test.py
