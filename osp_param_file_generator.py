@@ -53,8 +53,8 @@ def param_create():
     """sim params"""
     params['npt'] = 2**14
     params['tspan'] = 120e-12
-    params['M_N'] = (None, 50)   # max roundtrip, step per roundtrip 
-    params['S_P'] = (50, 10)  # save interval, plot interval 
+    params['M_N'] = (500, 50)   # max roundtrip, step per roundtrip 
+    params['S_P'] = (5, 10)  # save interval, plot interval 
 
     return params 
 

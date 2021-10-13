@@ -42,6 +42,7 @@ def fig_constructor(class_obj):
     class_obj.lf = lf
     class_obj.bg1 = bg1
     class_obj.bg2 = bg2
+    class_obj.figure = fig 
     class_obj.canvas = fig.canvas
 
 def fig_update(class_obj):

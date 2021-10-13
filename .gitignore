@@ -3,3 +3,4 @@ __pycache__/
 ssf_save/ 
 untracked_files/
 raman_profile_test.py
+initial_gain_check/
