@@ -81,8 +81,7 @@ class ssf_sim_class():
         pass 
 
     def common_processing(self):
-        """called smallest of plotting or saving call, regardless of save/plot state"""
-        pass 
+        """called smallest of plotting or saving call, regardless of save/plot state""" 
 
     def integration_step(self, E, E_in, alpha, del0, gamma, L, fr, RR_f, dispersion, h, N):
         """integrator step, performed in fftshifted grid"""
