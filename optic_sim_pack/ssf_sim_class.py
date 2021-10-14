@@ -9,11 +9,12 @@ c = 3e8
 
 class ssf_sim_class():
     def __init__(self, params, E_init = None, E_in = None, 
-                    plotting = False, saving = False, auto_stop = False,
+                    plotting = False, saving = False, force_proc = False,
                     *args, **kargs):
 
         self.plotting = plotting 
         self.saving = saving
+        self.force_proc = force_proc
 
         self.params = params
         self.params_list = None
@@ -33,20 +34,18 @@ class ssf_sim_class():
         
         self.grid_constructor()
 
-        if plotting:
-            if 'fig_mod' in kargs:
-                self.fig_initiate(fig_mod = kargs['fig_mod'])
+        if 'fig_mod' in kargs:
+            self.fig_initiate(fig_mod = kargs['fig_mod'])
 
-            else:
-                from . import ssf_sim_fig_default as fig_default
-                self.fig_initiate(fig_mod = fig_default)
+        else:
+            from . import ssf_sim_fig_default as fig_default
+            self.fig_initiate(fig_mod = fig_default)
 
-        if saving:
-            if 'save_mod' in kargs:
-                self.save_initiate(save_mod = kargs['save_mod'])
-            else:
-                from . import ssf_sim_save_default as save_default
-                self.save_initiate(save_mod = save_default)
+        if 'save_mod' in kargs:
+            self.save_initiate(save_mod = kargs['save_mod'])
+        else:
+            from . import ssf_sim_save_default as save_default
+            self.save_initiate(save_mod = save_default)
  
 
     """imported method"""
@@ -60,7 +59,7 @@ class ssf_sim_class():
 
         self.fig_constructor = partial(fig_mod.fig_constructor, self)
         self.fig_update = partial(fig_mod.fig_update, self)
-        self.fig_constructor()
+        
     
     def save_initiate(self, save_mod):
         """save inititator, saving module can be custom defined with two component, save start which is called 
@@ -79,6 +78,10 @@ class ssf_sim_class():
 
     def saving_processing(self):
         """same as rt_processing, but called every saving call"""
+        pass 
+
+    def common_processing(self):
+        """called smallest of plotting or saving call, regardless of save/plot state"""
         pass 
 
     def integration_step(self, E, E_in, alpha, del0, gamma, L, fr, RR_f, dispersion, h, N):
@@ -114,11 +117,14 @@ class ssf_sim_class():
             self.params_list = self.params_list_constructor()
         else: pass 
 
-        processing_state = any([self.plotting, self.saving])
+        processing_state = any([self.plotting, self.saving, self.force_proc])
         self.rt_counter = 0
 
         if self.saving:
             self.save_start()
+        
+        if self.plotting:
+            self.fig_constructor()
         
         while True:
 
@@ -130,7 +136,7 @@ class ssf_sim_class():
             self.rt_processing()
 
             if processing_state:
-
+                
                 if self.plotting:
                     if self.rt_counter%p_interval == 0:
                         self.plotting_processing()
@@ -140,3 +146,5 @@ class ssf_sim_class():
                     if self.rt_counter%s_interval == 0:
                         self.saving_processing()
                         self.save_update()
+
+                self.common_processing()

@@ -31,22 +31,31 @@ dur = params['p_in_dur']
 E = (np.random.rand(params['npt']) + 1j * np.random.rand(params['npt'])) * 1e-12 
 
 sim_class = osp.ssf_sim_class(params= params, E_init= E, 
-plotting = True, saving = True)
+plotting = False, saving = False, force_proc = True )
 
 """ initial processing, not varied in loop """ 
 sim_class.m_rt = params['M_N'][0]
-def new_processing(class_obj):
+def new_s_processing(class_obj):
     if class_obj.rt_counter > class_obj.m_rt:
         print('Exit loop')
         raise RuntimeError
     else:
         pass 
 
-def new_processing2(class_obj):
+def new_p_processing(class_obj):
     print(class_obj.rt_counter)
 
-sim_class.saving_processing = partial(new_processing, sim_class)
-sim_class.plotting_processing = partial(new_processing2, sim_class)
+def new_c_processing(class_obj):
+    pass 
+    # if class_obj.plotting != True:
+    #     if class_obj.rt_counter > 100:
+    #         print('saving initiated')
+    #         class_obj.plotting = True 
+             
+
+sim_class.saving_processing = partial(new_s_processing, sim_class)
+sim_class.plotting_processing = partial(new_p_processing, sim_class)
+sim_class.common_processing = partial(new_c_processing, sim_class)
 
 RR_ori = (ra.Raman_res_interp(sim_class.f_plot, 
 Raman_mod = ra.Raman_res_SigDamped(tau1 = 12.2e-15, tau2 =  32e-15 )))
@@ -69,6 +78,7 @@ tau1 = 1/tau1p ; tau2 = 32e-15*2
 RR = sim_class.params_list[5] = fftshift(ra.Raman_res_interp(sim_class.f_plot, 
 Raman_mod = ra.Raman_res_SigDamped(tau1 = tau1, tau2 = tau2)))
 
+sim_class.fig_constructor()
 sim_class.axp = sim_class.ax1.twinx() 
 sim_class.axp.plot(sim_class.t_sample, np.abs(sim_class.E_in)**2, c = 'red')
 sim_class.axp.axvline(shift, ls = '--')

@@ -43,18 +43,19 @@ def param_create():
     
     """driving params"""
     params['P_in'] = 25
-    params['d'] = -210e-15 #-170e-15
+    params['d'] = -240e-15 #-170e-15
     params['del0'] = 0.03
     params['order'] = 4
     lam_c = params['wl_pump'] = 1480e-9 #1490e-9
     params['betak'] = get_dispersion( c/lam_c * 2 * np.pi)
+    params['betak'][3] *= .8
     params['p_in_dur'] = 2e-12 
  
     """sim params"""
     params['npt'] = 2**14
-    params['tspan'] = 120e-12
-    params['M_N'] = (500, 50)   # max roundtrip, step per roundtrip 
-    params['S_P'] = (5, 10)  # save interval, plot interval 
+    params['tspan'] = 100e-12
+    params['M_N'] = (2e3, 20)   # max roundtrip, step per roundtrip 
+    params['S_P'] = (100, 10)  # save interval, plot interval 
 
     return params 
 
