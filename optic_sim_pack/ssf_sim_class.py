@@ -18,6 +18,8 @@ class ssf_sim_class():
 
         self.params = params
         self.params_list = None
+        self.fig_started = False
+        self.save_started = False
 
         if E_init is None:
             """If E_init not provided, random initial field is used"""
@@ -82,6 +84,7 @@ class ssf_sim_class():
 
     def common_processing(self):
         """called smallest of plotting or saving call, regardless of save/plot state""" 
+        pass
 
     def integration_step(self, E, E_in, alpha, del0, gamma, L, fr, RR_f, dispersion, h, N):
         """integrator step, performed in fftshifted grid"""
@@ -120,10 +123,14 @@ class ssf_sim_class():
         self.rt_counter = 0
 
         if self.saving:
-            self.save_start()
-        
+            if not self.save_started:
+                self.save_start()
+        else: pass
+
         if self.plotting:
-            self.fig_constructor()
+            if not self.fig_started:
+                self.fig_constructor()
+        else: pass 
         
         while True:
 

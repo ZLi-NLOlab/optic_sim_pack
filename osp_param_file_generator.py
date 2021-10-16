@@ -43,13 +43,13 @@ def param_create():
     
     """driving params"""
     params['P_in'] = 25
-    params['d'] = -240e-15 #-170e-15
+    params['d'] = -170e-15 #-170e-15
     params['del0'] = 0.03
     params['order'] = 4
     lam_c = params['wl_pump'] = 1480e-9 #1490e-9
     params['betak'] = get_dispersion( c/lam_c * 2 * np.pi)
-    params['betak'][3] *= .8
-    params['p_in_dur'] = 2e-12 
+    # params['betak'][3] *= .8
+    params['p_in_dur'] = .2e-12 
  
     """sim params"""
     params['npt'] = 2**14

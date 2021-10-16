@@ -44,6 +44,7 @@ def fig_constructor(class_obj):
     class_obj.bg2 = bg2
     class_obj.figure = fig 
     class_obj.canvas = fig.canvas
+    class_obj.fig_started = True
 
 def fig_update(class_obj):
     abs_E = np.abs(class_obj.E)**2

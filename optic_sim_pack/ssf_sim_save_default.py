@@ -5,6 +5,7 @@ from os.path import getsize, isdir
 from secrets import token_hex
 
 def save_start(class_obj):
+    class_obj.save_started = True
     class_obj.file_counter = 0 
     class_obj.file_token = token_hex(3)
     class_obj.file_name = class_obj.file_token + '_ssf_save_' 

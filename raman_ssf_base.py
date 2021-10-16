@@ -31,7 +31,7 @@ dur = params['p_in_dur']
 E = (np.random.rand(params['npt']) + 1j * np.random.rand(params['npt'])) * 1e-12 
 
 sim_class = osp.ssf_sim_class(params= params, E_init= E, 
-plotting = False, saving = False, force_proc = True )
+plotting = True, saving = False, force_proc = False )
 
 """ initial processing, not varied in loop """ 
 sim_class.m_rt = params['M_N'][0]
