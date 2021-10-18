@@ -40,6 +40,7 @@ def fig_constructor(class_obj):
     class_obj.ax2 = ax2 
     class_obj.lt = lt
     class_obj.lf = lf
+    class_obj.animated_list = [(class_obj.ax1, lt), (class_obj.ax2, lf)]
     class_obj.bg1 = bg1
     class_obj.bg2 = bg2
     class_obj.figure = fig 
@@ -64,8 +65,9 @@ def fig_update(class_obj):
     class_obj.canvas.restore_region(class_obj.bg1)
     class_obj.canvas.restore_region(class_obj.bg2)
 
-    class_obj.ax1.draw_artist(class_obj.lt)
-    class_obj.ax2.draw_artist(class_obj.lf)
+    for tup_temp in class_obj.animated_list:
+        tup_temp[0].draw_artist(tup_temp[1])
+
     class_obj.canvas.blit(class_obj.ax1.bbox)
     class_obj.canvas.blit(class_obj.ax2.bbox)
     class_obj.canvas.flush_events()
