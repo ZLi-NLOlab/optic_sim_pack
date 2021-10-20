@@ -13,18 +13,24 @@ def find_nearst(val, array):
 
 def FWHM_find(val, array):
     c_index = np.where(array == np.nanmax(array))[0][0]
-    max_index = len(array)
+    max_index = len(array) - 1
     lower = c_index
     upper = c_index 
-    l_cont = True 
-    u_cont = True 
+    l_cont = True if c_index != 0 else False
+    u_cont = True if c_index != max_index else False
+
     while True:
+        if upper >= (max_index):
+            upper = max_index
+            u_cont = False 
+
+        if lower <= 0:
+            lower = 0
+            l_cont = False   
+
         if l_cont:
             if not find_nearst_condi(array[lower - 1], array[lower], val):    
                 lower -= 1
-            elif lower <= 0:
-                lower = 0
-                l_cont = False   
             else:
                 lower -=1
                 l_cont = False  
@@ -32,11 +38,7 @@ def FWHM_find(val, array):
         if u_cont:
             if not find_nearst_condi(array[upper], array[upper + 1], val):
                 upper += 1
-            elif upper >= max_index:
-                lower = max_index
-                u_cont = False  
             else:
-                upper += 1
                 u_cont = False
 
         if not any((l_cont, u_cont)):

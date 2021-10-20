@@ -37,25 +37,25 @@ def param_create():
     params['finesse'] = 200
     params['alpha'] = np.pi/params['finesse']
     params['gamma'] = 1.8e-3 
-    params['L'] = 1
+    params['L'] = 2
     params['theta1'] =  0.01
-    params['fR'] = 0.18
+    params['fR'] = 0.18 
     
     """driving params"""
-    params['P_in'] = 25
-    params['d'] = -180e-15
-    params['del0'] = -0.0
+    params['P_in'] = 30
+    params['d'] =  -165e-15 
+    params['del0'] = 0*params['alpha'] #0.03
     params['order'] = 4
-    lam_c = params['wl_pump'] = 1490e-9 #1490e-9
+    lam_c = params['wl_pump'] = 1490e-9
     params['betak'] = get_dispersion( c/lam_c * 2 * np.pi)
-    # params['betak'][3] *= .8
     params['p_in_dur'] = 2e-12 
+    # params['RR'] = (12.2e-15, 32e-15 * 2)
  
     """sim params"""
     params['npt'] = 2**14
     params['tspan'] = 100e-12
-    params['M_N'] = (2.2e3, 10)   # max roundtrip, step per roundtrip 
-    params['S_P'] = (1, 10)  # save interval, plot interval 
+    params['M_N'] = (10.01e3, 10)   # max roundtrip, step per roundtrip 
+    params['S_P'] = (10, 10)  # save interval, plot interval 
 
     return params 
 
