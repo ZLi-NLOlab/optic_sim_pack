@@ -52,9 +52,9 @@ def stack_load(name):
         try:
             while True:
                 data_temp = pickle.load(handle)
-                data_array.append(data_temp[-1])
+                data_array.append(data_temp)
         except EOFError:
             pass
     
-    return np.asarray(data_array)
+    return data_array
 
