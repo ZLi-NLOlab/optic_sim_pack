@@ -65,7 +65,7 @@ def Raman_res_multiV_base(t_sample):
 def Raman_res_multiV():
     return Raman_res_multiV_base
 
-def Raman_res_interp(f_fit, npt_interpol = 2**14, Raman_mod = Raman_res_multiV):
+def Raman_res_interp(f_fit, npt_interpol = 2**14, Raman_mod = Raman_res_multiV, return_mode = 'spectral'):
     npt = npt_interpol
     tspan =  3000 * 1e-15 
 
@@ -84,6 +84,9 @@ def Raman_res_interp(f_fit, npt_interpol = 2**14, Raman_mod = Raman_res_multiV):
     RR_fit = interpol_aux(RR_f, f_sample, f_fit)
     RR_fit /= np.sum(fftshift(fft(fftshift(RR_fit)).real)) * 1/len(f_fit)
 
-    return RR_fit
+    if return_mode == 'temporal':
+        return t_sample, RR/np.sum(RR)
+    else: 
+        return RR_fit
 
 
