@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import raman_aux as ra
 import phase_matching_aux as pa
+import sim_processing_mod as spm
 
 if __name__ == '__main__':
     import osp_param_file_generator as ofg
@@ -16,61 +17,13 @@ rcParams['lines.linewidth'] = .8
 rcParams['font.size'] = 8
 fftshift = np.fft.fftshift
 
-def find_zero(arr):
-    z_cross = []
-    for n in range(len(arr) -1):
-        if np.sign(arr[n] * arr[n+1]) == -1:
-            z_cross.append(n)
-    return z_cross
+new_s_processing = spm.new_s_processing 
+new_p_processing = spm.new_p_processing
+new_c_processing = spm.new_c_processing
 
-def norm_to_one(arr):
-    span = (np.max(arr) - np.min(arr))
-    return (arr)/abs(span)
-
-def l_interp(val, index_arr, arr):
-    inte_temp = interp1d(arr[index_arr], index_arr)
-    return inte_temp(val)
-
-def new_s_processing(class_obj):
-    print('\r' + str(class_obj.rt_counter) + '    ', end = '')
-    if class_obj.rt_counter > class_obj.m_rt:
-        print('Exit loop')
-        raise RuntimeError
-    else:
-        pass 
-
-def new_p_processing(class_obj):
-    abE_temp = np.abs(class_obj.E)**2
-    fwhm = uf.FWHM_find(np.max(abE_temp)/2, abE_temp)
-    try:
-        upper = l_interp(np.max(abE_temp)/2, [fwhm[1], fwhm[1]-1], abE_temp)
-        lower = l_interp(np.max(abE_temp)/2, [fwhm[0], fwhm[0]+1], abE_temp)
-    except ValueError:
-        upper = fwhm[1]
-        lower = fwhm[0]
-    delta_t = (upper - lower) * (class_obj.t_sample[1] - class_obj.t_sample[0]) * 1e15 
-    class_obj.text.set_text('Duration = {:.2f} fs, P_max = {:.2f}, Delta = {:.2f} ({:.4f}), RT = {}, peak_pos = {:.2f}'.
-    format(delta_t, np.max(abE_temp), class_obj.params_list[1]/class_obj.params['alpha'],  class_obj.params_list[1], class_obj.rt_counter
-    ,(np.where(abE_temp == np.max(abE_temp))[0][0]- class_obj.params['npt']//2))) 
-
-def new_c_processing(class_obj):
-    pass 
-    # class_obj.params_list[1] += 10*params['alpha']/10e3
-
-    f_sN = 150; s_sN = class_obj.params['M_N'][0] - class_obj.params['S_P'][0] * 2500
-    if class_obj.saving != True:
-        if class_obj.rt_counter == f_sN:
-            print('saving initiated')
-            class_obj.saving = True
-        if class_obj.rt_counter >= s_sN: 
-            print('saving initiated')
-            class_obj.saving = True      
-    elif class_obj.rt_counter == (f_sN + int(params['S_P'][0])):
-        print('saving terminated')
-        class_obj.saving = False 
-    if class_obj.saving and not class_obj.save_started:
-        print('save started')
-        class_obj.save_start()
+find_zero = spm.find_zero
+norm_to_one = spm.norm_to_one
+"""-----------------------------------------------------------"""
 
 params = load('raman_sim_params', extension = '.params')
 dur = params['p_in_dur']

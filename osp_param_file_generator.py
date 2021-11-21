@@ -54,7 +54,7 @@ def param_create():
     """sim params"""
     params['npt'] = 2**14
     params['tspan'] = 100e-12
-    params['M_N'] = (6.5e3, 50)   # max roundtrip, step per roundtrip 
+    params['M_N'] = (6.5e3, 20)   # max roundtrip, step per roundtrip 
     params['S_P'] = (1, 10)  # save interval, plot interval 
 
     return params 
@@ -62,7 +62,6 @@ def param_create():
 def params_save(params):
     save(params, 'raman_sim_params', extension = '.params', overwrite= True)
     print('param created')
-
 
 if __name__ == '__main__':
     params = param_create()
