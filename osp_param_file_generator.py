@@ -8,6 +8,7 @@ b4_zdw = -6.659178e-55
 b5_zdw = 0e-71
 zdw = 1564.5221e-9
 w_zdw = c/zdw * 2 * np.pi
+tau1 = 12.2e-15 ; tau2 = 32e-15
 
 def get_dispersion(w_p): 
     
@@ -40,6 +41,7 @@ def param_create():
     params['L'] = 1
     params['theta1'] =  0.01
     params['fR'] = 0.18 
+    params['RR'] = (tau1, tau2)
     
     """driving params"""
     params['P_in'] = 20
