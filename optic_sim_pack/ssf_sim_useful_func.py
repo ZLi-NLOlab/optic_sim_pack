@@ -1,6 +1,8 @@
 import numpy as np 
 import pickle as pickle 
 
+from os.path import isfile
+
 def find_nearst_condi(a,b,c):
     if a < c <= b or b <= c < a:
         return True 
@@ -58,3 +60,18 @@ def stack_load(name):
     
     return data_array
 
+def stack_load_multi(name):
+    data_array = []
+    counter = 0 
+    while isfile(name + '_{}'.format(counter)):
+        with open(name + '_{}'.format(counter), 'rb') as handle:
+            try:
+                while True:
+                    data_temp = pickle.load(handle)
+                    data_array.append(data_temp)
+            except EOFError:
+                pass
+        counter += 1
+    
+    return data_array
+          

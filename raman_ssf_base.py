@@ -57,11 +57,11 @@ def new_c_processing(class_obj):
     pass 
     # class_obj.params_list[1] += 10*params['alpha']/10e3
 
-    f_sN = 150; s_sN = class_obj.params['M_N'][0] - class_obj.params['S_P'][0] * 1
+    f_sN = 150; s_sN = class_obj.params['M_N'][0] - class_obj.params['S_P'][0] * 2500
     if class_obj.saving != True:
-        # if class_obj.rt_counter == f_sN:
-        #     print('saving initiated')
-        #     class_obj.saving = True
+        if class_obj.rt_counter == f_sN:
+            print('saving initiated')
+            class_obj.saving = True
         if class_obj.rt_counter >= s_sN: 
             print('saving initiated')
             class_obj.saving = True      
@@ -75,8 +75,8 @@ def new_c_processing(class_obj):
 params = load('raman_sim_params', extension = '.params')
 dur = params['p_in_dur']
 
-# E =  (np.random.rand(params['npt']) + 1j * np.random.rand(params['npt'])) +  1e-12
-E = uf.stack_load('raman_sol_init')[-1][-1]
+E =  (np.random.rand(params['npt']) + 1j * np.random.rand(params['npt'])) * 1e-12
+# E = uf.stack_load('raman_sol_init')[-1][-1]
 # E = np.exp(-((np.arange(params['npt']) - params['npt']//2 - 50)/(150e-15/(params['tspan']/params['npt'])))**2) * 22
 # E = uf.stack_load('759b1a_ssf_save_0')[0, :]
 
