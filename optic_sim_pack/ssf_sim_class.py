@@ -3,7 +3,7 @@ import numpy as np
 from functools import partialmethod, partial
 from numpy.fft import fftshift, ifft, fft 
 from . import ssf_sim_aux as aux
-
+from . import ssf_sim_raman_aux as ra
 
 c = 3e8
 
@@ -48,11 +48,21 @@ class ssf_sim_class():
         else:
             from . import ssf_sim_save_default as save_default
             self.save_initiate(save_mod = save_default)
- 
+    
+        if 'Raman_mode' in kargs:
+            if kargs['Raman_mode'] == 'Sing Osc':
+                if 'RR_tau' in self.params:
+                    self.Raman_res_interp = lambda f_plot: ra.Raman_res_interp(f_plot, Raman_mod= ra.Raman_res_SigDamped(*self.params['RR_tau']))
+                else:
+                    self.Raman_res_interp = lambda f_plot: ra.Raman_res_interp(f_plot, Raman_mod= ra.Raman_res_SigDamped())
+                
+        else:
+            self.Raman_res_interp = lambda f_plot: ra.Raman_res_interp(f_plot, Raman_mod= ra.Raman_res_multiV())
 
     """imported method"""
     grid_constructor = partialmethod(aux.grid_constructor)
     params_list_constructor = partialmethod(aux.params_list_constructor)
+    integration_step = partialmethod(aux.integration_step)
 
     def fig_initiate(self, fig_mod):
         """figure initiator, the figure module can be custom designed with two component
@@ -85,24 +95,6 @@ class ssf_sim_class():
     def common_processing(self):
         """called smallest of plotting or saving call, regardless of save/plot state""" 
         pass
-
-    def integration_step(self, E, E_in, alpha, del0, gamma, L, fr, RR_f, dispersion, h, N):
-        """integrator step, performed in fftshifted grid"""
-        for temp in range(N):
-            abs_E = np.abs(E)**2
-
-            RA = RR_f * ifft(abs_E)
-            RA = fft(RA)
-
-            NL = -alpha - 1j*del0 +  1j * gamma * L * ((1-fr) * abs_E + fr * RA)
-            k0 = E + E_in/NL
-            E_NL = k0* np.exp(NL*h) - E_in/NL
-
-            E_f = ifft(E_NL)
-            E_dispersion  = E_f * np.exp(dispersion*h)
-            E = fft(E_dispersion)
-
-        return E
 
     def integ_param_const(self):
         self.params_list = self.params_list_constructor()

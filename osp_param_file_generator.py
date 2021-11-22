@@ -41,7 +41,7 @@ def param_create():
     params['L'] = 1
     params['theta1'] =  0.01
     params['fR'] = 0.18 
-    params['RR'] = (tau1, tau2)
+    params['RR_tau'] = (tau1, tau2)
     
     """driving params"""
     params['P_in'] = 20
