@@ -27,8 +27,12 @@ def save_start(class_obj):
     with open(class_obj.file_name + str(class_obj.file_counter), 'wb') as handle:
         pass
 
-def save_update(class_obj):
-    out_array = [class_obj.rt_counter, class_obj.params_list[1], class_obj.E]
+def out_array_default(class_obj):
+    return [class_obj.rt_counter, class_obj.params_list[1], class_obj.E] 
+
+def save_update(class_obj, out_array_func = out_array_default):
+    out_array = out_array_func(class_obj)
+    
     if getsize(class_obj.file_name + str(class_obj.file_counter))/1024**2 > 500:
         class_obj.file_counter += 1
     else:
