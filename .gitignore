@@ -8,3 +8,4 @@ initial_gain_check/
 raman_sol_init
 various_length_params.pkl 
 sim_processing_mod.py
+osp_param_file_generator.py 
