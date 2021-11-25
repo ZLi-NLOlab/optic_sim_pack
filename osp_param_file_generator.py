@@ -45,7 +45,7 @@ def param_create():
     
     """driving params"""
     params['P_in'] = 30
-    params['d'] =  -124e-15 
+    params['d'] =  -124.5e-15 
     params['del0'] = 1.91 * params['alpha'] 
     params['order'] = 4
     lam_c = params['wl_pump'] = 1500e-9
