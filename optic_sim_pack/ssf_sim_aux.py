@@ -16,7 +16,13 @@ def grid_constructor(class_obj):
     class_obj.f_plot = grid * npt/t_span
     """reverse freq_grid for integrator step"""
     class_obj.f_sample = fftshift(class_obj.f_plot* 2 *np.pi)
+    
     if 'wl_pump' in class_obj.params:
+        """check minimum temporal duration"""
+        t_span_lim = class_obj.params['npt']/(c/class_obj.params['wl_pump'] * 2) 
+        if class_obj.params['tspan'] <= t_span_lim:
+            raise ValueError('tspan beyond limit, min tspan = {}'.format(t_span_lim)) 
+        
         class_obj.lam_grid = c/(class_obj.f_plot + c/class_obj.params['wl_pump']) * 1e9
     else:
         class_obj.lam_grid = None 

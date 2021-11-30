@@ -4,6 +4,9 @@ import numpy as np
 from matplotlib.gridspec import GridSpec
 from .ssf_sim_aux import CW_return
 
+def get_num_base(val):
+    return int(np.floor(np.log10(val)))
+
 """Default figure mod, used if no other are provided, can be overwritten by custom module"""
 
 def fig_constructor(class_obj):
@@ -20,10 +23,29 @@ def fig_constructor(class_obj):
     ax1.set_xlim(class_obj.t_sample[0], class_obj.t_sample[-1])
     ax1.set_ylim(-.05, 5)
     
-    if class_obj.lam_grid is None:
-        ax2.set_xlim(class_obj.f_plot[0], class_obj.f_plot[-1])
+    ax2.set_xlim(class_obj.f_plot[0], class_obj.f_plot[-1])
+    ax2.set_facecolor('none')
+    
+    """create wavelength grid if driving wavelength is available"""
+    if 'wl_pump' in class_obj.params:
+        ax2_2 = ax2.twiny()
+        ax2.set_zorder(ax2_2.get_zorder() + 2)
+        """find closes single int base"""
+        upper = 3e8/(class_obj.f_plot[0] + 3e8/class_obj.params['wl_pump'])* 1e9; lower = 3e8/(class_obj.f_plot[-1] + 3e8/class_obj.params['wl_pump'])* 1e9
+        interval = abs(upper - lower)/5; base = get_num_base(interval)
+        interval = int(interval/10**base) * 10**base
+        
+        """construct and add lam_grid to figure, at the moment if fspan is too big the higher wavelength is crammped"""
+        lam_grid = np.arange(lower , upper, interval); lam_grid = np.round( lam_grid, decimals = -min(base, get_num_base(min(lam_grid))))
+        freq_grid = 3e8/(lam_grid*1e-9) - 3e8/class_obj.params['wl_pump']
+
+        ax2_2.set_xticks(freq_grid)
+        ax2_2.set_xticklabels(lam_grid)
+        ax2_2.set_xlim(ax2.get_xlim())
+
     else:
-        ax2.set_xlim(class_obj.lam_grid[-1], class_obj.lam_grid[0])
+        pass
+    
     ax2.set_ylim(-350, 10)
     plt.pause(.01)
     
@@ -60,7 +82,7 @@ def fig_update(class_obj):
                                class_obj.params['theta1'])
 
     class_obj.lt.set_data([class_obj.t_sample, abs_E/CW_max])
-    class_obj.lf.set_data([class_obj.lam_grid, E_f])
+    class_obj.lf.set_data([class_obj.f_plot, E_f])
 
     class_obj.canvas.restore_region(class_obj.bg1)
     class_obj.canvas.restore_region(class_obj.bg2)
