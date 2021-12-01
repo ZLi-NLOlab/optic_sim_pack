@@ -14,11 +14,11 @@ def grid_constructor(class_obj):
     grid = np.linspace(-npt/2, npt/2, npt, endpoint = False)/npt 
     class_obj.t_sample = grid * t_span
     class_obj.f_plot = grid * npt/t_span
-    """reverse freq_grid for integrator step"""
+    # """reverse freq_grid for integrator step"""
     class_obj.f_sample = fftshift(class_obj.f_plot* 2 *np.pi)
-    
+
     if 'wl_pump' in class_obj.params:
-        """check minimum temporal duration"""
+        # """check minimum temporal duration"""
         t_span_lim = class_obj.params['npt']/(c/class_obj.params['wl_pump'] * 2) 
         if class_obj.params['tspan'] <= t_span_lim:
             raise ValueError('tspan beyond limit, min tspan = {}'.format(t_span_lim)) 
@@ -30,7 +30,7 @@ def grid_constructor(class_obj):
 def params_list_constructor(class_obj):
     params = class_obj.params
     f_sample = class_obj.f_sample
-    """Raman response calculated with correct grid then shifted"""
+    # """Raman response calculated with correct grid then shifted"""
     RR_f = fftshift(class_obj.Raman_res_interp(fftshift(f_sample/2/np.pi)))
     h = 1/params['M_N'][1]
 

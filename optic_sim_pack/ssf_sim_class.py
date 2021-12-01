@@ -20,6 +20,7 @@ class ssf_sim_class():
         self.params_list = None
         self.fig_started = False
         self.save_started = False
+        self.integration_mode = None
 
         if E_init is None:
             """If E_init not provided, random initial field is used"""
