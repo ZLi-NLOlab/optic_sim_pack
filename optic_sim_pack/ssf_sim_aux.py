@@ -41,7 +41,8 @@ def params_list_constructor(class_obj):
             dispersion += f_sample**n / factorial(n) * betak[n]
     dispersion = 1j*params['L'] * (dispersion - f_sample * params['d'])
 
-    out_list = [params['alpha'],
+    out_list = [np.sqrt(params['P_in'] * params['theta1']),
+                params['alpha'],
                 params['del0'],
                 params['gamma'],
                 params['L'],
@@ -65,7 +66,7 @@ def CW_return(del0, alpha, P_in, gamma, L, theta):
 
     return sol_min, sol_max
 
-def integration_step(self, E, E_in, alpha, del0, gamma, L, fr, RR_f, dispersion, h, N):
+def integration_step(self, E, E_in_prof, E_in_mag, alpha, del0, gamma, L, fr, RR_f, dispersion, h, N):
     """integrator step, performed in fftshifted grid"""
     for temp in range(N):
         abs_E = np.abs(E)**2
@@ -74,8 +75,8 @@ def integration_step(self, E, E_in, alpha, del0, gamma, L, fr, RR_f, dispersion,
         RA = fft(RA)
 
         NL = -alpha - 1j*del0 +  1j * gamma * L * ((1-fr) * abs_E + fr * RA)
-        k0 = E + E_in/NL
-        E_NL = k0* np.exp(NL*h) - E_in/NL
+        k0 = E + E_in_prof * E_in_mag/NL
+        E_NL = k0* np.exp(NL*h) - E_in_prof * E_in_mag/NL
 
         E_f = ifft(E_NL)
         E_dispersion  = E_f * np.exp(dispersion*h)

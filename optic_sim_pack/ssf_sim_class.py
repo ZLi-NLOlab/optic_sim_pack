@@ -8,35 +8,48 @@ from . import ssf_sim_raman_aux as ra
 c = 3e8
 
 class ssf_sim_class():
-    def __init__(self, params, E_init = None, E_in = None, 
+    def __init__(self, params, E_init = None, E_in_prof = None, 
                     plotting = False, saving = False, force_proc = False,
                     *args, **kargs):
+
+    #    """-----------------------------------------------------------"""
+    #    """Class variables initialisation"""
 
         self.plotting = plotting 
         self.saving = saving
         self.force_proc = force_proc
-
+ 
         self.params = params
         self.params_list = None
         self.fig_started = False
         self.save_started = False
         self.integration_mode = None
 
-        if E_init is None:
-            """If E_init not provided, random initial field is used"""
-            self.E_init = (np.random.rand(params['npt']) + 1j * np.random.rand(params['npt'])) * 1e-12
-        else:
-            self.E_init = E_init
-            self.params['npt'] = len(E_init)
-        
-        if E_in is None:
-            self.E_in = np.sqrt(params['P_in'] * params['theta1'])
-        else:
-            """Note that E_p is the input field profile with amplitude normalized to 1"""
-            self.E_in = E_in * np.sqrt(params['P_in'] * params['theta1'])
-        
         self.grid_constructor()
+        
+        #"""Initial E field, if E_init not provided, random initial field is used"""
+        if E_init is None:
+            self.E_init = (np.random.rand(params['npt']) + 1j * np.random.rand(params['npt'])) * 1e-12
+        elif type(E_init).__name__ == "function":
+            self.E_init = E_init(self.t_sample) 
+        elif type(E_init).__name__ in ["list", "ndarray"]:
+            self.E_init = E_init
+        else:
+            raise TypeError('Invalid E_init type')
 
+        # """Note that E_in_prof is the input field profile with amplitude normalized to 1, 
+        # function can be used as an input with t_sample as variable,
+        # if no provided CW field is used"""
+        if E_in_prof is None:
+            self.E_in_prof = np.ones(self.params['npt'])
+        elif type(E_in_prof).__name__ == "function":
+            self.E_in_prof = E_in_prof(self.t_sample) 
+        elif type(E_in_prof).__name__ in ["list", "ndarray"]:
+            self.E_in_prof = E_in_prof
+        else:
+            raise TypeError('Invalid E_in_prof type')
+        
+        
         if 'fig_mod' in kargs:
             self.fig_initiate(fig_mod = kargs['fig_mod'])
 
@@ -102,12 +115,13 @@ class ssf_sim_class():
 
     def integration(self):
         E = self.E_init
-        E_in = self.E_in 
         
         M, N = self.params['M_N']
         s_interval, p_interval = self.params['S_P']
-        """param list in the following order:
-        0 alpha, 1 del0, 2 gamma, 3 L, 4 fR, 5 RR_f, 6 dispersion, 7 h"""
+
+        # """param list in the following order:
+        # 0 P_in, 1 alpha, 2 del0, 3 gamma, 4 L, 5 fR, 6 RR_f, 7 dispersion, 8 h"""
+        
         if self.params_list == None:
             self.params_list = self.params_list_constructor()
         else: pass 
@@ -127,7 +141,7 @@ class ssf_sim_class():
         
         while True:
 
-            E = self.integration_step(E, E_in, *self.params_list, N)
+            E = self.integration_step(E, self.E_in_prof, *self.params_list, N)
 
             self.rt_counter += 1
 
