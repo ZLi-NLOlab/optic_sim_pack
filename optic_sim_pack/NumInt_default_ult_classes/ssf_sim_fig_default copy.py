@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from matplotlib.gridspec import GridSpec
-from .ssf_sim_aux import CW_return
+from ..ssf_sim_useful_func import CW_return
 
 def get_num_base(val):
     return int(np.floor(np.log10(val)))

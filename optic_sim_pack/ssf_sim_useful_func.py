@@ -3,6 +3,20 @@ import pickle as pickle
 
 from os.path import isfile
 
+def CW_return(del0, alpha, P_in, gamma, L, theta):
+    Delta = del0/alpha
+    X = P_in * (gamma * L * theta)/alpha**3
+    roots = np.roots([1, -2*Delta, 1+Delta**2, -X])
+    root = []
+    for n_temp in roots:
+        if np.imag(n_temp) == 0:
+            root.append(n_temp)
+
+    sol_min = (min(root) * 1/(gamma * L/alpha)).real
+    sol_max = (max(root) * 1/(gamma * L/alpha)).real
+
+    return sol_min, sol_max
+    
 def find_nearst_condi(a,b,c):
     if a < c <= b or b <= c < a:
         return True 
@@ -74,4 +88,4 @@ def stack_load_multi(name):
         counter += 1
     
     return data_array
-          
+

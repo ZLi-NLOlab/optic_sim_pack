@@ -1,2 +1,2 @@
-from .ssf_sim_class import ssf_sim_class
+from .ssf_sim_class_new import ssf_sim_class
 
