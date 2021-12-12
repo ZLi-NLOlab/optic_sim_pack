@@ -1,11 +1,11 @@
 import numpy as np 
 
-from ..NumInt_raman_aux import Raman_res_interp
+from ...AuxFuncs import Raman_calc as rc
 from numpy.fft import fft, ifft, fftshift
 from functools import partial
 from math import factorial 
 
-class NumInt_LLE_class():
+class NumInt_LLE_ssf_class():
 
     def integration_step(self):
         """integrator for LLE using ssf, performed in fftshifted grid"""
@@ -33,7 +33,7 @@ class NumInt_LLE_class():
         params.E_in_mag = np.sqrt(params.P_in * params.theta1)
 
         # """Raman response calculated with correct grid then shifted"""
-        params.RR_f = fftshift(Raman_res_interp(fftshift(f_sample/2/np.pi)))
+        params.RR_f = fftshift(rc.Raman_res_interp(fftshift(f_sample/2/np.pi)))
         params.h = 1/params._N
 
         betak = params.betak
@@ -47,4 +47,4 @@ class NumInt_LLE_class():
     # def __repr__(self):
     #     return "LLE_SSF default"
 
-NumInt_LLE_class.__name__ = 'LLE_SSF defualt'
+NumInt_LLE_ssf_class.__name__ = 'LLE_SSF defualt'

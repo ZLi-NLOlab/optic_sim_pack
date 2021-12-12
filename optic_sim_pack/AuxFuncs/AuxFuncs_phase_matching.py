@@ -1,22 +1,10 @@
-import matplotlib.pyplot as plt 
 import numpy as np 
 
-from load_save_func import load 
+from .AuxFuncs_misc_func import CW_return
 from math import factorial
 
 c = 3e8
 
-def CW_return(del0, alpha, X, gamma, L):
-    Delta = del0/alpha
-    roots = np.roots([1, -2*Delta, 1+Delta**2, -X])
-    root = []
-    for n_temp in roots:
-        if np.imag(n_temp) == 0:
-            root.append(n_temp)
-
-    sol_min = (min(root) * (1/(np.sqrt(gamma * L/alpha)))**2).real
-    sol_max = (max(root) * (1/(np.sqrt(gamma * L/alpha)))**2).real
-    return sol_min
 
 def delta_phi_calc(params, f_sample):
     betak = params['betak'] 

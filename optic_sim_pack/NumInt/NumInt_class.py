@@ -4,13 +4,11 @@ from functools import partialmethod, partial
 from numpy.fft import fftshift, ifft, fft 
 from pathlib import Path
 
-from . import NumInt_method as NumInt_method 
-from .NumInt_aux import params_container, status_container, _integration_manager_base, _save_control_base, _plot_control_base
+from . import NumInt_method  
+from ..AuxFuncs import params_container, status_container
+from .NumInt_base_classes import  _integration_manager_base, _save_control_base, _plot_control_base
 from .NumInt_default_ult_classes import plot_class_default, save_class_default
 
-
-
-c = 3e8
 
 class NumInt_class():
     """
@@ -73,7 +71,7 @@ class NumInt_class():
     #    """-----------------------------------------------------------"""
     #    """Class variables initialisation"""
 
-        integration_method = NumInt_method.NumInt_LLE_class
+        integration_method = NumInt_method.NumInt_LLE_ssf_class
 
         self.params_c = params_container(params)
         self.status_c  = status_container(
@@ -140,6 +138,3 @@ class NumInt_class():
 
     def launch(self):
         self.integration_manager.integrate()
-
-def init_call_test(self):
-    print('init_call test')

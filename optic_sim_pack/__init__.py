@@ -1,2 +1,6 @@
-from .NumInt_class import NumInt_class
+from .NumInt import * 
+from .AuxFuncs import * 
+
+from . import NumInt as NumInt 
+from . import AuxFuncs as AuxFuncs
 
