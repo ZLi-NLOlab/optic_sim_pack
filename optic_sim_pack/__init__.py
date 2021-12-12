@@ -1,2 +1,2 @@
-from .ssf_sim_class_new import ssf_sim_class
+from .NumInt_class import NumInt_class
 

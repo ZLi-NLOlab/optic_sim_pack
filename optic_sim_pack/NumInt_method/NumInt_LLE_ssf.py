@@ -1,6 +1,6 @@
 import numpy as np 
 
-from ..ssf_sim_raman_aux import Raman_res_interp
+from ..NumInt_raman_aux import Raman_res_interp
 from numpy.fft import fft, ifft, fftshift
 from functools import partial
 from math import factorial 

@@ -2,8 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from matplotlib.gridspec import GridSpec
-from ..ssf_sim_useful_func import CW_return
+from ..NumInt_useful_func import CW_return
 from matplotlib import rcParams 
+
 rcParams['lines.linewidth'] = .8
 rcParams['font.size'] = 8
 rcParams['xtick.direction'] = 'in'

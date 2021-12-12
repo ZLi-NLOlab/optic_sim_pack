@@ -5,14 +5,14 @@ from numpy.fft import fftshift, ifft, fft
 from pathlib import Path
 
 from . import NumInt_method as NumInt_method 
-from .ssf_sim_aux import params_container, status_container, _integration_manager_base, _save_control_base, _plot_control_base
+from .NumInt_aux import params_container, status_container, _integration_manager_base, _save_control_base, _plot_control_base
 from .NumInt_default_ult_classes import plot_class_default, save_class_default
 
 
 
 c = 3e8
 
-class ssf_sim_class():
+class NumInt_class():
     """
     Numerical integration class
 
