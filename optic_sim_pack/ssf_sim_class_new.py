@@ -2,10 +2,12 @@ import numpy as np
 
 from functools import partialmethod, partial
 from numpy.fft import fftshift, ifft, fft 
+from pathlib import Path
+
 from . import NumInt_method as NumInt_method 
 from .ssf_sim_aux import params_container, status_container, _integration_manager_base, _save_control_base, _plot_control_base
 from .NumInt_default_ult_classes import plot_class_default, save_class_default
-from typing import Union
+
 
 
 c = 3e8
@@ -65,7 +67,7 @@ class ssf_sim_class():
             # NumInt_method = 'LLE_ssf',
             plot_control_class = plot_class_default, 
             save_control_class = save_class_default,
-            make_dir = False, save_name = 'NumInt',
+            save_name = 'NumInt', tar_final = False, tar_remove = False,
             **kargs):
 
     #    """-----------------------------------------------------------"""
@@ -80,13 +82,16 @@ class ssf_sim_class():
                 'force_proc': force_proc,
                 'plot_started': False,
                 'save_started': False, 
-                'make_dir': make_dir, 
                 'save_name': save_name,
-                'save_dir': kargs['save_dir'] if 'save_dir' in kargs else '.',
+                # 'save_dir': kargs['save_dir'] if 'save_dir' in kargs else '.',
+                'save_dir': Path(kargs['save_dir']) if 'save_dir' in kargs else Path.cwd(), 
+                'tar_final': tar_final, 
+                'tar_remove': tar_remove,
                 'params_save_list': kargs['params_save_list'] if 'params_save_list' in kargs else None, 
                 'status_plot_list': kargs['status_plot_list'] if 'status_plot_list' in kargs else ['saving', 'plotting', 'save_started', 'plot_started', 'force_proc', 'NumInt_method'],
                 'save_func': kargs['save_func'] if 'save_func' in kargs else lambda cls: [cls.params_c.rt_counter, cls.params_c.E], 
-                'NumInt_method': integration_method.__name__
+                'NumInt_method': integration_method.__name__,
+                # 'root_dir': getcwd()
             })
 
         self._integration_manager_class = type(
@@ -97,7 +102,7 @@ class ssf_sim_class():
             {   'params_c': self.params_c,
                 'status_c': self.status_c,
                 'plot_control_class': type('plot_control_class', (plot_control_class, _plot_control_base), {}) if plot_control_class != None else _plot_control_base,
-                'save_control_class': type('save_control_class', (save_control_class, _save_control_base), {}) if save_control_class != None else _save_control_base
+                'save_control_class': type('save_control_class', (save_control_class, _save_control_base), {}) if save_control_class != None else _save_control_base,
                 **({'int_manager_init_call': kargs['int_init_call']} if 'int_init_call' in kargs else {}),
                 **({'common_processing': kargs['common_proc_call']} if 'common_proc_call' in kargs else {}),
                 **({'termination_processing': kargs['termination_proc_call']} if 'termination_proc_call' in kargs else {}),
@@ -136,3 +141,5 @@ class ssf_sim_class():
     def launch(self):
         self.integration_manager.integrate()
 
+def init_call_test(self):
+    print('init_call test')

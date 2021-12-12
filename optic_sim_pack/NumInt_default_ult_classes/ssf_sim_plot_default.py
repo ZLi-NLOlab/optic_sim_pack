@@ -3,6 +3,19 @@ import numpy as np
 
 from matplotlib.gridspec import GridSpec
 from ..ssf_sim_useful_func import CW_return
+from matplotlib import rcParams 
+rcParams['lines.linewidth'] = .8
+rcParams['font.size'] = 8
+rcParams['xtick.direction'] = 'in'
+rcParams['ytick.direction'] = 'in'
+rcParams['xtick.top'] = True
+rcParams['ytick.right'] = True
+rcParams['legend.fancybox'] = False
+rcParams['legend.edgecolor'] = 'black'
+rcParams['legend.framealpha'] = 1
+rcParams['legend.handlelength'] = 1.5
+rcParams['legend.fontsize'] = 8
+
 
 def get_num_base(val):
     return int(np.floor(np.log10(val)))
@@ -28,13 +41,16 @@ class plot_class_default():
                     top = .98, bottom = .05, wspace = .1)
 
         ax1 = fig.add_subplot(gs[0,:])
+        ax1_twinx = ax1.twinx(); ax1_twinx.set_zorder(0)
         ax2 = fig.add_subplot(gs[1, :])
 
         lt, = ax1.plot(params.t_sample, [np.nan] * params.npt, lw = .8)
         lf, = ax2.plot(params.f_plot, [np.nan] * params.npt, lw = .8)
         
+        ax1_twinx.plot(params.t_sample, params.E_in_prof, c = 'red')
+
         ax1.set_xlim(params.t_sample[0], params.t_sample[-1])
-        ax1.set_ylim(-.05, 5)
+        ax1.set_ylim(-.05, 10)
         
         ax2.set_xlim(params.f_plot[0], params.f_plot[-1])
         ax2.set_facecolor('none')
@@ -42,17 +58,20 @@ class plot_class_default():
 
         # """create wavelength grid if driving wavelength is available"""
         if 'lam_grid' in params:
+            print('lam_grid_construct')
             ax2_2 = ax2.twiny()
             ax2.set_zorder(ax2_2.get_zorder() + 2)
             # """find closes single int base"""
-            upper = 3e8/(params.f_plot[0] + 3e8/params.npt)* 1e9; lower = 3e8/(params.f_plot[-1] + 3e8/params.npt)* 1e9
+            upper = 3e8/(params.f_plot[0] + 3e8/params.wl_pump)* 1e9; lower = 3e8/(params.f_plot[-1] + 3e8/params.wl_pump)* 1e9
             interval = abs(upper - lower)/5; base = get_num_base(interval)
             interval = int(interval/10**base) * 10**base
             lam_grid = params.lam_grid
+            print(lower, upper , interval)
             
             # """construct and add lam_grid to figure, at the moment if fspan is too big the higher wavelength is crammped"""
-            lam_grid_ticks = np.arange(lower , upper, interval); lam_grid = np.round( lam_grid, decimals = -min(base, get_num_base(min(lam_grid))))
-            freq_grid = 3e8/(lam_grid_ticks*1e-9) - 3e8/params.npt
+            lam_grid_ticks = np.arange(lower , upper, interval); lam_grid_ticks = np.round( lam_grid_ticks, decimals = -min(base, get_num_base(min(lam_grid_ticks))))
+            freq_grid = 3e8/(lam_grid_ticks*1e-9) - 3e8/params.wl_pump
+            print(lam_grid_ticks)
 
             ax2_2.set_xticks(freq_grid)
             ax2_2.set_xticklabels(lam_grid_ticks)

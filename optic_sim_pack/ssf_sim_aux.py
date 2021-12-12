@@ -10,13 +10,13 @@ class _plot_control_base():
     def __init__(self, params_c, status_c): warn('base plot class __init__() called', RuntimeWarning, stacklevel= 2) 
     def plot_update(self): pass 
     def plot_start(self): pass 
-    def plot_final(self): print('save_final') 
+    def plot_final(self): pass 
 
 class _save_control_base():
     def __init__(self, params_c, status_c): warn('base save class __init__() called', RuntimeWarning, stacklevel= 2) 
     def save_update(self): pass 
     def save_start(self): pass 
-    def save_final(self): print('plot_final') 
+    def save_final(self): pass 
 
 
 class _container_base():
@@ -99,6 +99,7 @@ class _integration_manager_base():
         self.int_manager_init_call()
         
         self.status_c.initialised = True
+        print('int_mananger_base_class call')
 
     def grid_constructor(self):
         """Default temporal/spectral/wavelength grid constructor"""
@@ -131,7 +132,7 @@ class _integration_manager_base():
     def integration_step(self):
         raise NotImplementedError('Integration step not implemented; Sim terminated')
 
-    def int_manager_init_call(self): pass 
+    def int_manager_init_call(self): print('int init default')
 
     def plotting_processing(self): pass 
 
@@ -142,12 +143,11 @@ class _integration_manager_base():
     def termination_processing(self): pass 
 
     def integrate(self): 
-
         params = self.params_c
         status = self.status_c
         plot_control = self.plot_control
         save_control = self.save_control
-        trig = min(params._S, params._P)
+        trig = min(params._S_intv, params._P_intv)
 
         if status.saving:
             if not status.save_started:
@@ -166,23 +166,25 @@ class _integration_manager_base():
 
                 if not params.rt_counter%trig or status.force_proc:
                     
-                    if status.plotting and params.rt_counter%params._S:
+                    if status.plotting and not params.rt_counter%params._P_intv:
                         self.plotting_processing()
                         plot_control.plot_update()
 
-                    if status.saving and params.rt_counter%params._P:
+
+                    if status.saving and not params.rt_counter%params._S_intv:
                         self.saving_processing()
                         save_control.save_update()
+
                 
                     self.common_processing()
 
         except (KeyboardInterrupt, StopIteration):
             pass 
         
-        if status.saving:
-            self.save_control.save_final()
         if status.plotting:
             self.plot_control.plot_final()
+        if status.saving:
+            self.save_control.save_final()
         self.termination_processing()
         
         
