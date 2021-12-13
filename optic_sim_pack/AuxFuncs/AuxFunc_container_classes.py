@@ -67,3 +67,5 @@ class status_container(_container_base):
                 text += "{} = {},\n".format(str(n), vars(self)[n])            
         return text
 
+    def __repr__(self):
+        return "status_container:\n{} \n{}".format(list(vars(self).keys()), str(vars(self)))

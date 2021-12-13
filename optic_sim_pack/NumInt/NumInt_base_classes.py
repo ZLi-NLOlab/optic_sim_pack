@@ -29,8 +29,7 @@ class _integration_manager_base():
 
         self.int_manager_init_call()
         
-        self.status_c.initialised = True
-        print('int_mananger_base_class call')
+        self.status_c.base_initialised = True
 
     def grid_constructor(self):
         """Default temporal/spectral/wavelength grid constructor"""

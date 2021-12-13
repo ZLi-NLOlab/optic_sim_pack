@@ -8,6 +8,11 @@ from secrets import token_hex
 from warnings import warn
 
 class save_class_default():
+    default_save_list = [
+        'finesse', 'gamma', 'L', 'theta1', 'fR', 'RR_tau', 'RR_method',
+        'P_in', 'd', 'del0', 'order', 'betak',
+        'npt', 'tspan', '_M', '_N', '_S_intv', '_P_intv']
+
     def __init__(self, params_c, status_c):
         self.save_vars = self._save_vars_container()
         self.save_vars.token = token_hex(3)
@@ -15,8 +20,30 @@ class save_class_default():
 
         self.status_c = status_c
         self.params_c = params_c
-        # params_c.save_token = self.save_vars.token
 
+        self._status_check()
+
+
+    def _status_check(self):
+        status_c = self.status_c
+
+        status_c.save_started = False
+        if 'save_func' not in status_c:
+            status_c.save_func = lambda cls: [cls.params_c.rt_counter, cls.params_c.E]
+        else: pass
+
+        if 'params_save_list' not in status_c:
+            status_c.params_save_list = self.default_save_list
+        else: pass 
+
+        if 'tar_final' not in status_c:
+            status_c.tar_final = False
+        else: pass 
+
+        if 'tar_remove' not in status_c:
+            status_c.tar_remove = False 
+        else: pass 
+    
     def save_start(self):
         status_c = self.status_c
 
@@ -50,7 +77,7 @@ class save_class_default():
     def save_final(self):
         if self.status_c.tar_final and str(self.save_vars.token) in self.save_vars.folder_dir.name:
             chdir(self.save_vars.folder_dir.parent)
-            with tarfile.open(self.get_name('sim_out.gz.tar', fold_name= False), 'w:gz') as handle:
+            with tarfile.open(self.get_name('sim_out.tar', fold_name= False), 'w') as handle:
                 handle.add(self.save_vars.folder_dir.name)
             if self.status_c.tar_remove:
                 self._clear_folder()
@@ -60,16 +87,20 @@ class save_class_default():
 
     def _clear_folder(self):
         fold_dir = self.save_vars.folder_dir
-        if not fold_dir.is_dir():
+        if not self.status_c.save_started:
+            warn('save not started; clear folder skipped', UserWarning, stacklevel= 2)
+        elif not fold_dir.is_dir():
             warn('save dir path does not exist; clear folder skipped', UserWarning, stacklevel= 2)
         elif str(self.save_vars.token) not in fold_dir.name:
             warn('incorrect save dir path stored; clear folder skipped', UserWarning, stacklevel= 2) 
-        else:
+        elif self.status_c.save_started and fold_dir.is_dir() and (str(self.save_vars.token) in fold_dir.name):
             fold_list = [n for n in walk(fold_dir, topdown= False)]
             for fold_N in fold_list:
                 for file_N in fold_N[2]:
                     unlink(Path.joinpath(Path(fold_N[0]), Path(file_N)))
                 rmdir(fold_N[0])
+        else:
+            warn('unknown error occurred during folder clearing; clear folder skipped', UserWarning, stacklevel= 2)
 
     class _save_vars_container():
         pass  

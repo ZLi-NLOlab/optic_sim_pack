@@ -24,13 +24,35 @@ def get_num_base(val):
 # """Default figure mod, used if no other are provided, can be overwritten by custom module"""
 
 class plot_class_default():
+    default_status_c_list = ['saving', 'plotting', 'save_started', 'plot_started', 'force_proc', 'NumInt_method']
+    @staticmethod
+    def defualt_plot_text_func(cls):   
+        text = "rt_counter = {}\nDelta = {:.2f}\nP_max = {:.2f}\nRaman_mode = {}"
+        text = text.format(
+            cls.params_c.rt_counter, cls.params_c.del0/cls.params_c.alpha, max(abs(cls.params_c.E))**2,
+            cls.params_c.RR_method
+        )
+        return text
 
     def __init__(self, params_c, status_c):
         self.fig_vars = self._fig_vars_container()
         self.params_c = params_c 
         self.status_c = status_c
         CW_min, self.CW_max = CW_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
+        self._status_check()
 
+    def _status_check(self):
+        status_c = self.status_c
+        status_c.plot_started = False
+
+        if 'status_plot_list' not in status_c:
+            status_c.status_plot_list = self.default_status_c_list
+        else: pass 
+
+        if 'plot_text_func' not in status_c:
+            status_c.plot_text_func = self.defualt_plot_text_func
+        else: pass 
+        
     def plot_start(self):
         """default figure constructor"""
 
@@ -56,6 +78,7 @@ class plot_class_default():
         ax2.set_xlim(params.f_plot[0], params.f_plot[-1])
         ax2.set_facecolor('none')
         status_text = ax1.annotate('', xy = (.005, .99), xycoords = 'axes fraction', va = 'top', ha = 'left', fontsize = 6)
+        params_text = ax1.annotate('', xy = (.99, .99), xycoords = 'axes fraction', va = 'top', ha = 'right', fontsize = 6)
 
         # """create wavelength grid if driving wavelength is available"""
         if 'lam_grid' in params:
@@ -87,6 +110,7 @@ class plot_class_default():
         lt.set_animated(True)
         lf.set_animated(True)
         status_text.set_animated(True)
+        params_text.set_animated(True)
         fig.canvas.draw()
 
         bg1 = fig.canvas.copy_from_bbox(ax1.bbox)
@@ -99,7 +123,10 @@ class plot_class_default():
         fig_vars.lt = lt
         fig_vars.lf = lf
         fig_vars.status_text = status_text
-        fig_vars.animated_list = [(fig_vars.ax1, lt), (fig_vars.ax1, status_text), (fig_vars.ax2, lf)]
+        fig_vars.params_text = params_text
+        fig_vars.animated_list = [
+            (fig_vars.ax1, lt), (fig_vars.ax1, status_text), (fig_vars.ax1, params_text),
+            (fig_vars.ax2, lf)]
         fig_vars.bg1 = bg1
         fig_vars.bg2 = bg2
         fig_vars.figure = fig 
@@ -112,6 +139,7 @@ class plot_class_default():
         """default figure updator"""
 
         params = self.params_c
+        status = self.status_c
         fig_vars = self.fig_vars
 
         abs_E = np.abs(params.E)**2
@@ -120,7 +148,8 @@ class plot_class_default():
 
         fig_vars.lt.set_ydata(abs_E/self.CW_max)
         fig_vars.lf.set_ydata(E_f)
-        fig_vars.status_text.set_text(self.status_c.print_status(self.status_c.status_plot_list))
+        fig_vars.status_text.set_text(status.print_status(status.status_plot_list))
+        fig_vars.params_text.set_text(status.plot_text_func(self))
 
         fig_vars.canvas.restore_region(fig_vars.bg1)
         fig_vars.canvas.restore_region(fig_vars.bg2)

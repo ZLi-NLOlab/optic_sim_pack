@@ -71,27 +71,38 @@ class NumInt_class():
     #    """-----------------------------------------------------------"""
     #    """Class variables initialisation"""
 
+        # """integration method selection"""
         integration_method = NumInt_method.NumInt_LLE_ssf_class
+        if type(integration_method).__name__ == 'str':
+            if integration_method == 'LLE_ssf':
+                integration_method = NumInt_method.NumInt_LLE_ikeda_class
+            elif integration_method == 'LLE_ikeda':
+                integration_method = NumInt_method.NumInt_LLE_ikeda_class
+            elif integration_method == 'NLSE_ssf':
+                integration_method = NumInt_method.NumInt_NLSE_ssf_class
+            else: raise NotImplementedError('integration method not found; {}'.format(NumInt_method.__doc__))
+        elif type(integration_method).__name__ == 'type':
+            pass 
+        else: raise TypeError('invalid integration method input')
 
+        # """ensuring inputed integration_method does not have __init__()"""
+        if '__init__' in integration_method.__dict__:
+            raise TypeError('integration method must not contain __init__(), initialisation call can be delegated to int_init_call()')
+
+        # """creating status and params containter"""
         self.params_c = params_container(params)
         self.status_c  = status_container(
             {   'plotting' : plotting,
                 'saving': saving,
                 'force_proc': force_proc,
-                'plot_started': False,
-                'save_started': False, 
+                'base_initialised': False,
                 'save_name': save_name,
-                # 'save_dir': kargs['save_dir'] if 'save_dir' in kargs else '.',
                 'save_dir': Path(kargs['save_dir']) if 'save_dir' in kargs else Path.cwd(), 
-                'tar_final': tar_final, 
-                'tar_remove': tar_remove,
-                'params_save_list': kargs['params_save_list'] if 'params_save_list' in kargs else None, 
-                'status_plot_list': kargs['status_plot_list'] if 'status_plot_list' in kargs else ['saving', 'plotting', 'save_started', 'plot_started', 'force_proc', 'NumInt_method'],
-                'save_func': kargs['save_func'] if 'save_func' in kargs else lambda cls: [cls.params_c.rt_counter, cls.params_c.E], 
                 'NumInt_method': integration_method.__name__,
-                # 'root_dir': getcwd()
+                **(kargs['status_c_attri'] if 'status_c_attri' in kargs else {})
             })
 
+        # """dynamically create integration_manager class"""
         self._integration_manager_class = type(
             'integration_manager', 
             (   integration_method,
@@ -105,13 +116,12 @@ class NumInt_class():
                 **({'common_processing': kargs['common_proc_call']} if 'common_proc_call' in kargs else {}),
                 **({'termination_processing': kargs['termination_proc_call']} if 'termination_proc_call' in kargs else {}),
                 **({'plotting_processing': kargs['plot_proc_call']} if 'plot_proc_call' in kargs else {}),
-                **({'saving_processing': kargs['save_proc_call']} if 'save_proc_call' in kargs else {}),
-                
+                **({'saving_processing': kargs['save_proc_call']} if 'save_proc_call' in kargs else {}),   
             }
         )
         self.integration_manager = self._integration_manager_class()
         
-        #"""Initial E field, if E_init not provided, random initial field is used"""
+        # """Initial E field, if E_init not provided, random initial field is used"""
         if E_init is None:
             self.params_c.E = (np.random.rand(self.params_c.npt) + 1j * np.random.rand(self.params_c.npt)) * 1e-12
         elif type(E_init).__name__ == "function":
@@ -123,6 +133,7 @@ class NumInt_class():
         else:
             raise TypeError('Invalid E_init type')
 
+        # """Initial E_in profile, if E_in_prof not provided, CW driving is assumed"""
         if E_in_prof is None:
             self.params_c.E_in_prof = np.ones(self.params_c.npt)
         elif type(E_in_prof).__name__ == "function":
@@ -137,4 +148,7 @@ class NumInt_class():
         del params
 
     def launch(self):
+        if not self.status_c.base_initialised:
+            raise RuntimeError('integration manager failed to initialise')
+
         self.integration_manager.integrate()
