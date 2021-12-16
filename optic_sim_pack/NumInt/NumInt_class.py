@@ -33,6 +33,9 @@ class NumInt_class():
         If none is provided, the defualt figure class is used.
     -- save_control_class : class | optional 
         control class that define saving behaviour, similar to plot_control_class.
+    -- integration_method : str ['LLE_ssf' (defualt), 'LLE_ikeda' or 'NLSE_ssf'] or class 
+        numerical integration routine to be used. Currently, three methods are implemeted, 'LLE_ssf' (defualt),
+        'LLE_ikeda' and 'NLSE_ssf'. 
 
     Avaliable **kargs:
     Processing calls : class memeber function 
@@ -46,6 +49,11 @@ class NumInt_class():
         input provided then simple pass function is used. The call order is as 
         listed.
     
+    -- status_c_attri : dict
+        a dictionary of additional attributes that user wish to pass to status_c upon initialisation
+
+
+
     Explaination
     ----------    
     This is the initialisation class for the Numerical simulation. 
@@ -55,6 +63,10 @@ class NumInt_class():
     - The integration() call of the integration_mananger is designed to catch 
     KeyboardInterrupt and StopIteration exceptions. So if one intended to raise 
     exception call within integration() call, do not raise the above two.   
+    - The TkAgg is set as the matplotlib backend of this package (the setting occur
+    at initilisation of plot_class_defualt). This is done because Qt5Agg backend 
+    causes the problem fails to catch Keyboardinterrupt in painter_event() call.  
+    - One can define 
 
     """
     def __init__(self,  

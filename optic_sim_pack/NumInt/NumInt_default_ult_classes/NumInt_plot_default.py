@@ -147,7 +147,7 @@ class plot_class_default():
 
         abs_E = np.abs(params.E)**2
         E_f = np.abs(np.fft.fftshift(np.fft.ifft(params.E)))**2
-        E_f = 10 * np.log10(E_f/np.max(E_f))
+        E_f = 10 * np.log10(E_f)
 
         fig_vars.lt.set_ydata(abs_E/self.fig_vars.reference)
         fig_vars.lf.set_ydata(E_f)

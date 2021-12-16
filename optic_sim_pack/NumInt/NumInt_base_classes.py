@@ -1,8 +1,8 @@
 import numpy as np 
 
-from matplotlib.pyplot import close as pltclose 
 from numpy.fft import fftshift
 from warnings import warn
+from traceback import format_exc
 
 c = 3e8
 class _plot_control_base():
@@ -72,6 +72,11 @@ class _integration_manager_base():
 
     def termination_processing(self): pass 
 
+    def special_exception_handling(self, excp):
+        print('special exception occured')
+        print(format_exc())
+            
+
     def integrate(self): 
         params = self.params_c
         status = self.status_c
@@ -109,9 +114,12 @@ class _integration_manager_base():
                     self.common_processing()
 
         except (KeyboardInterrupt, StopIteration):
-            pltclose(self.plot_control.fig_vars.figure) 
-            print('cleaned up')
-        
+            pass 
+
+        except Exception as excp:
+            self.special_exception_handling(excp)
+
+
         if status.plotting:
             self.plot_control.plot_final()
         if status.saving:
