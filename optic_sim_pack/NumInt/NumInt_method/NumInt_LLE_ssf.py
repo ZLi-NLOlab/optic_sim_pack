@@ -2,10 +2,14 @@ import numpy as np
 
 from ...AuxFuncs import Raman_calc as rc
 from numpy.fft import fft, ifft, fftshift
-from functools import partial
 from math import factorial 
 
 class NumInt_LLE_ssf_class():
+
+    default_params_save_list = [
+        'finesse', 'gamma', 'L', 'theta1', 'fR', 'RR_method',
+        'P_in', 'd', 'del0', 'order', 'betak',
+        'npt', 'tspan', '_M', '_N', '_S_intv', '_P_intv']
 
     def integration_step(self):
         """integrator for LLE using ssf, performed in fftshifted grid"""
@@ -60,8 +64,5 @@ class NumInt_LLE_ssf_class():
                 dispersion += f_sample**n / factorial(n) * betak[n]
         dispersion = 1j*params.L * (dispersion - f_sample * params.d)
         params.dispersion = dispersion
-
-    # def __repr__(self):
-    #     return "LLE_SSF default"
 
 NumInt_LLE_ssf_class.__name__ = 'LLE_SSF defualt'

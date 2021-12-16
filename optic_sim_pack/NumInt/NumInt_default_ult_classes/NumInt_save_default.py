@@ -1,17 +1,13 @@
-import pickle as pickle 
 import tarfile as tarfile
 
-from os import mkdir, chdir, unlink, rmdir, walk
-from os.path import isdir, basename
+from os import chdir, unlink, rmdir, walk
 from pathlib import Path 
 from secrets import token_hex
 from warnings import warn
 
+from ...AuxFuncs.AuxFunc_load_save import stack_save
+
 class save_class_default():
-    default_save_list = [
-        'finesse', 'gamma', 'L', 'theta1', 'fR', 'RR_tau', 'RR_method',
-        'P_in', 'd', 'del0', 'order', 'betak',
-        'npt', 'tspan', '_M', '_N', '_S_intv', '_P_intv']
 
     def __init__(self, params_c, status_c):
         self.save_vars = self._save_vars_container()
@@ -22,27 +18,6 @@ class save_class_default():
         self.params_c = params_c
 
         self._status_check()
-
-
-    def _status_check(self):
-        status_c = self.status_c
-
-        status_c.save_started = False
-        if 'save_func' not in status_c:
-            status_c.save_func = lambda cls: [cls.params_c.rt_counter, cls.params_c.E]
-        else: pass
-
-        if 'params_save_list' not in status_c:
-            status_c.params_save_list = self.default_save_list
-        else: pass 
-
-        if 'tar_final' not in status_c:
-            status_c.tar_final = False
-        else: pass 
-
-        if 'tar_remove' not in status_c:
-            status_c.tar_remove = False 
-        else: pass 
     
     def save_start(self):
         status_c = self.status_c
@@ -51,33 +26,19 @@ class save_class_default():
         self.save_vars.folder_dir.mkdir()
         chdir(self.save_vars.folder_dir)
 
-        self.stack_save(self.params_c.params_return(self.status_c.params_save_list), self.get_name('init_params', fold_name= False))
-        
+        stack_save({**self.params_c[self.status_c.params_save_list], **status_c['data_save_list']}, 
+                self.get_name(extension = '.params', fold_name= False, token_extension= False))
         self.status_c.save_started = True
 
     def save_update(self):
-        out_data = self.status_c.save_func(self)
-        self.stack_save(out_data, self.get_name('data', fold_name= False))
-
-    def get_name(self, name = None, fold_name = True):
-        if fold_name:
-            inter_text = '_'
-        else: inter_text = '.'
-        if name == None: 
-            text = '{}{}{}'.format(self.status_c.save_name, inter_text, str(self.save_vars.token))
-        else: 
-            text = '{}_{}{}{}'.format(self.status_c.save_name, name, inter_text, str(self.save_vars.token), )
-    
-        return text
-
-    def stack_save(self, data, file):
-        with open(file, 'ab') as handle:
-            pickle.dump(data, handle)
+        out_data = self.params_c.get_params_list(self.status_c.data_save_list)
+        stack_save(out_data, self.get_name(extension = '.data', fold_name= False, token_extension= False))
 
     def save_final(self):
         if self.status_c.tar_final and str(self.save_vars.token) in self.save_vars.folder_dir.name:
+            print('tarring output')
             chdir(self.save_vars.folder_dir.parent)
-            with tarfile.open(self.get_name('sim_out.tar', fold_name= False), 'w') as handle:
+            with tarfile.open(self.get_name(extension = '.simout.tar.gz', fold_name= False), 'w:gz') as handle:
                 handle.add(self.save_vars.folder_dir.name)
             if self.status_c.tar_remove:
                 self._clear_folder()
@@ -85,6 +46,48 @@ class save_class_default():
         else: pass 
         chdir(self.save_vars.cwd)
 
+    def get_name(self, name = None, extension = None, fold_name = True, token_extension = True):
+        if name == None:
+            text = self.status_c.save_name
+        else: 
+            text = self.status_c.save_name + '_' + str(name)
+        
+        if extension != None:
+            text += extension
+        else: pass 
+
+        if token_extension:
+            if fold_name:
+                text += '_{}'.format(self.save_vars.token)
+            else:
+                text += '.{}'.format(self.save_vars.token)
+        return text
+
+
+
+    def _status_check(self):
+        status_c = self.status_c
+
+        status_c.save_started = False
+        if 'data_save_func' not in status_c:
+            status_c.data_save_func = lambda cls: [cls.params_c.rt_counter, cls.params_c.E]
+        else: pass
+
+        if 'params_save_list' not in status_c:
+            status_c.params_save_list = list(vars(self.params_c).keys())
+        else: pass 
+
+        if 'data_save_list' not in status_c:
+            status_c.data_save_list = ['rt_counter', 'E']
+
+        if 'tar_final' not in status_c:
+            status_c.tar_final = False
+        else: pass 
+
+        if 'tar_remove' not in status_c:
+            status_c.tar_remove = False 
+        else: pass 
+        
     def _clear_folder(self):
         fold_dir = self.save_vars.folder_dir
         if not self.status_c.save_started:

@@ -24,12 +24,14 @@ def get_num_base(val):
 # """Default figure mod, used if no other are provided, can be overwritten by custom module"""
 
 class plot_class_default():
-    default_status_c_list = ['saving', 'plotting', 'save_started', 'plot_started', 'force_proc', 'NumInt_method']
+    default_status_list = ['saving', 'plotting', 'save_started', 'plot_started', 'force_proc', 'NumInt_method']
+    
     @staticmethod
     def defualt_plot_text_func(cls):   
-        text = "rt_counter = {}\nDelta = {:.2f}\nP_max = {:.2f}\nRaman_mode = {}"
+        text = "rt_counter = {}\nP_max = {:.2f}\nRaman_mode = {}"
         text = text.format(
-            cls.params_c.rt_counter, cls.params_c.del0/cls.params_c.alpha, max(abs(cls.params_c.E))**2,
+            cls.params_c.rt_counter, 
+            max(abs(cls.params_c.E))**2,
             cls.params_c.RR_method
         )
         return text
@@ -38,20 +40,20 @@ class plot_class_default():
         self.fig_vars = self._fig_vars_container()
         self.params_c = params_c 
         self.status_c = status_c
-        CW_min, self.CW_max = CW_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
+
+        if 'LLE' in status_c.NumInt_method:
+            CW_min, self.fig_vars.reference = CW_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
+        elif 'NLSE' in status_c.NumInt_method:
+            self.fig_vars.reference = params_c.P_in
+        else: 
+            self.fig_vars.reference = 10
+
+        self.fig_vars.t_xlim = (params_c.t_sample[0], params_c.t_sample[-1])
+        self.fig_vars.t_ylim = (-.05, 10)
+        self.fig_vars.f_xlim = (params_c.f_plot[0], params_c.f_plot[-1])
+        self.fig_vars.f_ylim = (-350, 10)
+        
         self._status_check()
-
-    def _status_check(self):
-        status_c = self.status_c
-        status_c.plot_started = False
-
-        if 'status_plot_list' not in status_c:
-            status_c.status_plot_list = self.default_status_c_list
-        else: pass 
-
-        if 'plot_text_func' not in status_c:
-            status_c.plot_text_func = self.defualt_plot_text_func
-        else: pass 
         
     def plot_start(self):
         """default figure constructor"""
@@ -72,17 +74,18 @@ class plot_class_default():
         
         ax1_twinx.plot(params.t_sample, params.E_in_prof, c = 'red')
 
-        ax1.set_xlim(params.t_sample[0], params.t_sample[-1])
-        ax1.set_ylim(-.05, 10)
+        ax1.set_xlim(fig_vars.t_xlim)
+        ax1.set_ylim(fig_vars.t_ylim)
         
-        ax2.set_xlim(params.f_plot[0], params.f_plot[-1])
+        ax2.set_xlim(fig_vars.f_xlim)
+        ax2.set_ylim(fig_vars.f_ylim)
+
         ax2.set_facecolor('none')
         status_text = ax1.annotate('', xy = (.005, .99), xycoords = 'axes fraction', va = 'top', ha = 'left', fontsize = 6)
         params_text = ax1.annotate('', xy = (.99, .99), xycoords = 'axes fraction', va = 'top', ha = 'right', fontsize = 6)
 
         # """create wavelength grid if driving wavelength is available"""
         if 'lam_grid' in params:
-            print('lam_grid_construct')
             ax2_2 = ax2.twiny()
             ax2.set_zorder(ax2_2.get_zorder() + 2)
             # """find closes single int base"""
@@ -90,12 +93,10 @@ class plot_class_default():
             interval = abs(upper - lower)/5; base = get_num_base(interval)
             interval = int(interval/10**base) * 10**base
             lam_grid = params.lam_grid
-            print(lower, upper , interval)
             
             # """construct and add lam_grid to figure, at the moment if fspan is too big the higher wavelength is crammped"""
             lam_grid_ticks = np.arange(lower , upper, interval); lam_grid_ticks = np.round( lam_grid_ticks, decimals = -min(base, get_num_base(min(lam_grid_ticks))))
             freq_grid = 3e8/(lam_grid_ticks*1e-9) - 3e8/params.wl_pump
-            print(lam_grid_ticks)
 
             ax2_2.set_xticks(freq_grid)
             ax2_2.set_xticklabels(lam_grid_ticks)
@@ -104,7 +105,6 @@ class plot_class_default():
         else:
             pass
         
-        ax2.set_ylim(-350, 10)
         plt.pause(.01)
         
         lt.set_animated(True)
@@ -146,7 +146,7 @@ class plot_class_default():
         E_f = np.abs(np.fft.fftshift(np.fft.ifft(params.E)))**2
         E_f = 10 * np.log10(E_f/np.max(E_f))
 
-        fig_vars.lt.set_ydata(abs_E/self.CW_max)
+        fig_vars.lt.set_ydata(abs_E/self.fig_vars.reference)
         fig_vars.lf.set_ydata(E_f)
         fig_vars.status_text.set_text(status.print_status(status.status_plot_list))
         fig_vars.params_text.set_text(status.plot_text_func(self))
@@ -169,5 +169,17 @@ class plot_class_default():
         fig_vars.canvas.copy_from_bbox(fig_vars.ax2.bbox)
         fig_vars.canvas.flush_events()
 
+    def _status_check(self):
+        status_c = self.status_c
+        status_c.plot_started = False
+
+        if 'status_plot_list' not in status_c:
+            status_c.status_plot_list = self.default_status_list
+        else: pass 
+
+        if 'plot_text_func' not in status_c:
+            status_c.plot_text_func = self.defualt_plot_text_func
+        else: pass 
+        
     class _fig_vars_container():
         pass 

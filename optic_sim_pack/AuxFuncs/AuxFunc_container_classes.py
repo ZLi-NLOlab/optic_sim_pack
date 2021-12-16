@@ -4,6 +4,16 @@ class _container_base():
     def __init__(self, *args, **kargs):
         self.set_params(*args, **kargs)
 
+    def __getitem__(self, key):
+        if type(key).__name__ == 'str':
+            return {key: vars(self)[key]}
+
+        elif type(key).__name__ == 'list' or type(key).__name__ == 'tuple':
+            out_dict = dict()
+            return dict([(_key_temp, vars(self)[_key_temp]) for _key_temp in key])   
+        
+        else: raise TypeError
+        
     def set_params(self, *args, **kargs):
         for args_temp in args:
             if type(args_temp) != dict:
@@ -34,15 +44,12 @@ class _container_base():
 
 class params_container(_container_base):
 
-    def __getitem__(self, key):
-        return vars(self)[key]
-
-    def params_return(self, params_list):
-        if params_list == None: 
-            params_list = vars(self).keys()
-        else: pass 
-
-        return dict([(_key_temp, vars(self)[_key_temp]) for _key_temp in params_list])         
+    def get_params_list(self, params_list) -> list:
+        if type(params_list).__name__ == 'list':
+            return [vars(self)[_key_temp] for _key_temp in params_list]
+        elif type(params_list).__name__ == 'str':
+            return [vars(self)[params_list]]
+        else: raise TypeError
 
     def __repr__(self):
         return "params_container:\n{} \n{}".format(list(vars(self).keys()), str(vars(self)))

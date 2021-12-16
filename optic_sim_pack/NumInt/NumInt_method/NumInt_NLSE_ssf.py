@@ -1,4 +1,65 @@
+import numpy as np 
+
+from ...AuxFuncs import Raman_calc as rc
+from numpy.fft import fft, ifft, fftshift
+from math import factorial 
 
 class NumInt_NLSE_ssf_class():
-    # raise NotImplementedError 
-    pass 
+
+    default_params_save_list = [
+        'finesse', 'gamma', 'fR', 'RR_method',
+        'P_in', 'd', 'order', 'betak',
+        'npt', 'tspan', '_M', '_N', '_S_intv', '_P_intv']
+
+    def params_constructor(self):
+        params = self.params_c
+        f_sample = params.f_sample
+
+        params.E_in_mag = np.sqrt(params.P_in)
+
+        # """Raman response calculated with correct grid then shifted"""
+        if 'RR_method' in params:
+            if params.RR_method == 'multiV':
+                raman_method = rc.Raman_res_multiV
+            elif params.RR_method == 'SigDamped':
+                raman_method = rc.Raman_res_SigDamped
+            else:
+                raise NotImplementedError('Raman method not found')
+        else: 
+            params.RR_method = 'multiV'
+            raman_method = rc.Raman_res_multiV
+
+        
+        params.RR_f = fftshift(
+                rc.Raman_res_interp(
+                    fftshift(f_sample/2/np.pi), 
+                    Raman_mod = raman_method(*params.RR_tau)
+                    ))
+
+        params.h = 1/params._N
+
+        # """dispersion calc"""
+        betak = params.betak
+        dispersion = 0 
+        for n in betak.keys():
+            if n <= params.order:
+                dispersion += f_sample**n / factorial(n) * betak[n]
+        dispersion = 1j * dispersion
+        params.dispersion = dispersion
+
+    def integration_step(self):
+        params = self.params_c
+        for temp in range(params._N):
+            abs_E = np.abs(params.E)**2
+            
+            RA = params.RR_f * ifft(abs_E)
+            RA = fft(RA)
+
+            NL = -params.alpha + 1j * params.gamma * ((1- params.fR) * abs_E + params.fR * RA)
+            E_NL = params.E * np.exp(NL * params.h)
+
+            E_f = ifft(E_NL)
+            E_dispersion = E_f * np.exp(params.dispersion * params.h)
+            params.E = fft(E_dispersion)
+
+NumInt_NLSE_ssf_class.__name__ = 'NLSE_SSF default'

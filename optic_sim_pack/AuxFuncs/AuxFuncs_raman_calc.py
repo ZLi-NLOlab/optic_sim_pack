@@ -34,7 +34,6 @@ def interpol_aux(RR_f, f_ori, f_fit):
 def Raman_res_SigDamped_base(t_sample, tau1, tau2):
     "NOT FOR USE IN SIMULATION"
     "Single dampled oscillator model, tau1 gain peak position, tau2 gain bandwidth"
-    print(tau1, tau2, t_sample)
     hr = np.exp(-t_sample/tau2)*np.sin(t_sample/tau1) * np.heaviside(t_sample, 1) 
     
     return hr 

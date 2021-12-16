@@ -62,7 +62,7 @@ class NumInt_class():
             E_init = None, 
             E_in_prof = None, 
             plotting = False, saving = False, force_proc = False,
-            # NumInt_method = 'LLE_ssf',
+            integration_method = 'LLE_ssf',
             plot_control_class = plot_class_default, 
             save_control_class = save_class_default,
             save_name = 'NumInt', tar_final = False, tar_remove = False,
@@ -72,10 +72,9 @@ class NumInt_class():
     #    """Class variables initialisation"""
 
         # """integration method selection"""
-        integration_method = NumInt_method.NumInt_LLE_ssf_class
         if type(integration_method).__name__ == 'str':
             if integration_method == 'LLE_ssf':
-                integration_method = NumInt_method.NumInt_LLE_ikeda_class
+                integration_method = NumInt_method.NumInt_LLE_ssf_class
             elif integration_method == 'LLE_ikeda':
                 integration_method = NumInt_method.NumInt_LLE_ikeda_class
             elif integration_method == 'NLSE_ssf':
@@ -98,7 +97,9 @@ class NumInt_class():
                 'base_initialised': False,
                 'save_name': save_name,
                 'save_dir': Path(kargs['save_dir']) if 'save_dir' in kargs else Path.cwd(), 
-                'NumInt_method': integration_method.__name__,
+                'NumInt_method': integration_method.__name__, 
+                **({'params_save_list': integration_method.__dict__['default_params_save_list']} if 'default_params_save_list' in integration_method.__dict__ else {}),
+                **({'data_save_list': integration_method.__dict__['default_data_save_list']} if 'default_data_save_list' in integration_method.__dict__ else {}),
                 **(kargs['status_c_attri'] if 'status_c_attri' in kargs else {})
             })
 
@@ -125,7 +126,7 @@ class NumInt_class():
         if E_init is None:
             self.params_c.E = (np.random.rand(self.params_c.npt) + 1j * np.random.rand(self.params_c.npt)) * 1e-12
         elif type(E_init).__name__ == "function":
-            self.params_c.E = E_init(self.params_c.t_sample) 
+            self.params_c.E = E_init(self.params_c) 
         elif type(E_init).__name__ == "list":
             self.params_c.E = np.asarray(E_init)
         elif type(E_init).__name__ == "ndarray":
@@ -137,7 +138,7 @@ class NumInt_class():
         if E_in_prof is None:
             self.params_c.E_in_prof = np.ones(self.params_c.npt)
         elif type(E_in_prof).__name__ == "function":
-            self.params_c.E_in_prof = E_in_prof(self.params_c.t_sample) 
+            self.params_c.E_in_prof = E_in_prof(self.params_c) 
         elif type(E_in_prof).__name__ == "list":
             self.params_c.E_in_prof = np.asarray(E_init)
         elif type(E_in_prof).__name__ == "ndarray":

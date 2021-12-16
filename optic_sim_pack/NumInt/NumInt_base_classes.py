@@ -22,7 +22,6 @@ class _integration_manager_base():
         self.grid_constructor()
         self.params_constructor()
         self.params_c.rt_counter = None
-        self.status_c.integration_mode = self.__repr__()
 
         self.plot_control = self.plot_control_class(self.params_c, self.status_c)
         self.save_control = self.save_control_class(self.params_c, self.status_c)
