@@ -151,5 +151,5 @@ class NumInt_class():
     def launch(self):
         if not self.status_c.base_initialised:
             raise RuntimeError('integration manager failed to initialise')
-
+        
         self.integration_manager.integrate()

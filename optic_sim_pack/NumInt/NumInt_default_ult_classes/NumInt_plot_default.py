@@ -3,7 +3,7 @@ import numpy as np
 
 from matplotlib.gridspec import GridSpec
 from ...AuxFuncs.AuxFuncs_misc_func import CW_return
-from matplotlib import rcParams 
+from matplotlib import rcParams, use
 
 rcParams['lines.linewidth'] = .8
 rcParams['font.size'] = 8
@@ -37,6 +37,9 @@ class plot_class_default():
         return text
 
     def __init__(self, params_c, status_c):
+        
+        # TkAgg backend is used instead of Qt5Agg as the latter create strange issue with error catching
+        use('TkAgg') 
         self.fig_vars = self._fig_vars_container()
         self.params_c = params_c 
         self.status_c = status_c

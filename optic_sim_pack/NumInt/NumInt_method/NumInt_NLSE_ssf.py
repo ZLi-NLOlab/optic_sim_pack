@@ -44,7 +44,7 @@ class NumInt_NLSE_ssf_class():
         for n in betak.keys():
             if n <= params.order:
                 dispersion += f_sample**n / factorial(n) * betak[n]
-        dispersion = 1j * dispersion
+        dispersion = 1j * (dispersion - f_sample * params.d) 
         params.dispersion = dispersion
 
     def integration_step(self):

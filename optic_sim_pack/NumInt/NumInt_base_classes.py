@@ -1,5 +1,6 @@
 import numpy as np 
 
+from matplotlib.pyplot import close as pltclose 
 from numpy.fft import fftshift
 from warnings import warn
 
@@ -108,7 +109,8 @@ class _integration_manager_base():
                     self.common_processing()
 
         except (KeyboardInterrupt, StopIteration):
-            pass 
+            pltclose(self.plot_control.fig_vars.figure) 
+            print('cleaned up')
         
         if status.plotting:
             self.plot_control.plot_final()
