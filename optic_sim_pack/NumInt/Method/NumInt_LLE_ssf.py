@@ -4,7 +4,7 @@ from ...AuxFuncs import Raman_calc as rc
 from numpy.fft import fft, ifft, fftshift
 from math import factorial 
 
-class NumInt_LLE_ssf_class():
+class numint_LLE_ssf_class():
 
     default_params_save_list = [
         'finesse', 'gamma', 'L', 'theta1', 'fR', 'RR_method',
@@ -39,18 +39,18 @@ class NumInt_LLE_ssf_class():
         # """Raman response calculated with correct grid then shifted"""
         if 'RR_method' in params:
             if params.RR_method == 'multiV':
-                raman_method = rc.Raman_res_multiV
+                raman_method = rc.raman_res_multiV
             elif params.RR_method == 'SigDamped':
-                raman_method = rc.Raman_res_SigDamped
+                raman_method = rc.raman_res_SigDamped
             else:
                 raise NotImplementedError('Raman method not found')
         else: 
             params.RR_method = 'multiV'
-            raman_method = rc.Raman_res_multiV
+            raman_method = rc.raman_res_multiV
 
         
         params.RR_f = fftshift(
-                rc.Raman_res_interp(
+                rc.raman_res_interp(
                     fftshift(f_sample/2/np.pi), 
                     Raman_mod = raman_method(*params.RR_tau)
                     ))
@@ -65,4 +65,4 @@ class NumInt_LLE_ssf_class():
         dispersion = 1j*params.L * (dispersion - f_sample * params.d)
         params.dispersion = dispersion
 
-NumInt_LLE_ssf_class.__name__ = 'LLE_SSF defualt'
+numint_LLE_ssf_class.__name__ = 'LLE_SSF defualt'

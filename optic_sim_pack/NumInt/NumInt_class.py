@@ -4,10 +4,10 @@ from functools import partialmethod, partial
 from numpy.fft import fftshift, ifft, fft 
 from pathlib import Path
 
-from . import NumInt_method  
+from . import Method  
 from ..AuxFuncs import params_container, status_container
-from .NumInt_base_classes import  _integration_manager_base, _save_control_base, _plot_control_base
-from .NumInt_default_ult_classes import plot_class_default, save_class_default
+from .Base_classes import  _integration_manager_base, _save_control_base, _plot_control_base
+from .Default_ult_classes import plot_class_default, save_class_default
 
 
 class NumInt_class():
@@ -86,12 +86,12 @@ class NumInt_class():
         # """integration method selection"""
         if type(integration_method).__name__ == 'str':
             if integration_method == 'LLE_ssf':
-                integration_method = NumInt_method.NumInt_LLE_ssf_class
+                integration_method = Method.numint_LLE_ssf_class
             elif integration_method == 'LLE_ikeda':
-                integration_method = NumInt_method.NumInt_LLE_ikeda_class
+                integration_method = Method.numint_LLE_ikeda_class
             elif integration_method == 'NLSE_ssf':
-                integration_method = NumInt_method.NumInt_NLSE_ssf_class
-            else: raise NotImplementedError('integration method not found; {}'.format(NumInt_method.__doc__))
+                integration_method = Method.numint_NLSE_ssf_class
+            else: raise NotImplementedError('integration method not found; {}'.format(Method.__doc__))
         elif type(integration_method).__name__ == 'type':
             pass 
         else: raise TypeError('invalid integration method input')
@@ -130,6 +130,7 @@ class NumInt_class():
                 **({'termination_processing': kargs['termination_proc_call']} if 'termination_proc_call' in kargs else {}),
                 **({'plotting_processing': kargs['plot_proc_call']} if 'plot_proc_call' in kargs else {}),
                 **({'saving_processing': kargs['save_proc_call']} if 'save_proc_call' in kargs else {}),   
+                **({'pre_launch_processing': kargs['pre_launch_call']} if 'pre_launch_call' in kargs else {}),  
             }
         )
         self.integration_manager = self._integration_manager_class()

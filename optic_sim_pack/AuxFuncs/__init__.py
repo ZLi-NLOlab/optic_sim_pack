@@ -1,10 +1,15 @@
-from . import AuxFuncs_misc_func as Misc_func
-from . import AuxFuncs_phase_matching as Phase_matching 
-from . import AuxFuncs_raman_calc as Raman_calc
-from . import AuxFunc_container_classes as Container
-from . import AuxFunc_load_save as load_save 
+from . import Raman_calc as Raman_calc
+from . import Container_classes as Container_classes
+from . import Load_save as Load_save
+from . import Misc_func as Misc_func
+from . import Phase_matching as Phase_matching
 
-params_container = Container.params_container
-status_container = Container.status_container
 
-__all__ = ['params_container', 'status_container', 'load_save']
+
+from .Raman_calc import * 
+from .Container_classes import * 
+from .Load_save import * 
+
+__all__ = Raman_calc.__all__.copy()
+__all__.extend(Container_classes.__all__)
+__all__.extend(Load_save.__all__)

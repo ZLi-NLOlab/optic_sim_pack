@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from matplotlib.gridspec import GridSpec
-from ...AuxFuncs.AuxFuncs_misc_func import CW_return
+from ...AuxFuncs.Misc_func import cw_return
 from matplotlib import rcParams, use
 
 rcParams['lines.linewidth'] = .8
@@ -45,7 +45,7 @@ class plot_class_default():
         self.status_c = status_c
 
         if 'LLE' in status_c.NumInt_method:
-            CW_min, self.fig_vars.reference = CW_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
+            CW_min, self.fig_vars.reference = cw_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
         elif 'NLSE' in status_c.NumInt_method:
             self.fig_vars.reference = params_c.P_in
         else: 
@@ -83,10 +83,15 @@ class plot_class_default():
         ax2.set_xlim(fig_vars.f_xlim)
         ax2.set_ylim(fig_vars.f_ylim)
 
+        ax2_twinx = ax2.twinx(); ax2_twinx.set_zorder(0)
+        ax2_twinx.set_ylim(0,1)
+
         ax2.set_facecolor('none')
         status_text = ax1.annotate('', xy = (.005, .99), xycoords = 'axes fraction', va = 'top', ha = 'left', fontsize = 6)
         params_text = ax1.annotate('', xy = (.99, .99), xycoords = 'axes fraction', va = 'top', ha = 'right', fontsize = 6)
-
+        ax1.annotate('y-scale referene = {:.3f} W'.format(fig_vars.reference), 
+            xy = (.01, .025), xycoords = 'axes fraction', va = 'bottom', ha = 'left', fontsize = 6)
+        
         # """create wavelength grid if driving wavelength is available"""
         if 'lam_grid' in params:
             ax2_2 = ax2.twiny()
@@ -123,6 +128,7 @@ class plot_class_default():
         
         fig_vars.ax1 = ax1 
         fig_vars.ax2 = ax2 
+        fig_vars.twins = (ax1_twinx, ax2_twinx)
         fig_vars.lt = lt
         fig_vars.lf = lf
         fig_vars.status_text = status_text
@@ -167,9 +173,11 @@ class plot_class_default():
     def canvas_update(self):
         
         fig_vars = self.fig_vars
-        fig_vars.fig.canvas.draw()
-        fig_vars.canvas.copy_from_bbox(fig_vars.ax1.bbox)
-        fig_vars.canvas.copy_from_bbox(fig_vars.ax2.bbox)
+        plt.pause(.01)
+        fig_vars.figure.canvas.draw()
+        fig_vars.canvas.flush_events()
+        fig_vars.bg1 = fig_vars.canvas.copy_from_bbox(fig_vars.ax1.bbox)
+        fig_vars.bg2 = fig_vars.canvas.copy_from_bbox(fig_vars.ax2.bbox)
         fig_vars.canvas.flush_events()
 
     def _status_check(self):

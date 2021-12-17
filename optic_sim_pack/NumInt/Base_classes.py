@@ -64,6 +64,8 @@ class _integration_manager_base():
 
     def int_manager_init_call(self): print('int init default')
 
+    def pre_launch_processing(self): pass
+
     def plotting_processing(self): pass 
 
     def saving_processing(self): pass 
@@ -93,6 +95,8 @@ class _integration_manager_base():
             if not status.plot_started:
                 plot_control.plot_start()
         else: pass         
+        
+        self.pre_launch_processing()
 
         try:
             for params.rt_counter in range(1, int(params._M) + 1):
@@ -114,15 +118,14 @@ class _integration_manager_base():
                     self.common_processing()
 
         except (KeyboardInterrupt, StopIteration):
-            pass 
+            print('stop iteration exit') 
 
         except Exception as excp:
             self.special_exception_handling(excp)
 
-
         if status.plotting:
             self.plot_control.plot_final()
-        if status.saving:
+        if status.save_started:
             self.save_control.save_final()
         self.termination_processing()
         

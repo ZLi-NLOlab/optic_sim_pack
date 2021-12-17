@@ -8,3 +8,5 @@ sim_config_file.py
 test?.py 
 sim_class_testing.py 
 loading_test.py
+sim_class_launch_file.py 
+*.simout.*

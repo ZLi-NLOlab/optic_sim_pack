@@ -1,9 +1,9 @@
 import numpy as np 
 
-from functools import partial 
 from numpy.fft import ifft, fft, fftshift 
 from scipy.interpolate import interp1d
 
+__all__ = ['raman_res_SigDamped', 'raman_res_multiV', 'raman_res_interp']
 
 vp = {
         1: {'cP': 56.25, 'ci': 1, 'gf': 52, 'lf': 17.37},
@@ -31,17 +31,17 @@ def interpol_aux(RR_f, f_ori, f_fit):
 
     return RR_fitR + 1j * RR_fitI
 
-def Raman_res_SigDamped_base(t_sample, tau1, tau2):
+def raman_res_SigDamped_base(t_sample, tau1, tau2):
     "NOT FOR USE IN SIMULATION"
     "Single dampled oscillator model, tau1 gain peak position, tau2 gain bandwidth"
     hr = np.exp(-t_sample/tau2)*np.sin(t_sample/tau1) * np.heaviside(t_sample, 1) 
     
     return hr 
 
-def Raman_res_SigDamped(tau1 = 12.2e-15, tau2 = 32e-15):
-        return lambda x: Raman_res_SigDamped_base(x, tau1, tau2)
+def raman_res_SigDamped(tau1 = 12.2e-15, tau2 = 32e-15):
+        return lambda x: raman_res_SigDamped_base(x, tau1, tau2)
 
-def Raman_res_multiV_base(t_sample): 
+def raman_res_multiV_base(t_sample): 
     "NOT FOR USE IN SIMULATION"
     "Multi-vibrational mode model"
     key_list = vp.keys()
@@ -61,10 +61,10 @@ def Raman_res_multiV_base(t_sample):
         hr += hr_temp
     return hr
 
-def Raman_res_multiV(*args):
-    return Raman_res_multiV_base
+def raman_res_multiV(*args):
+    return raman_res_multiV_base
 
-def Raman_res_interp(f_fit, npt_interpol = 2**14, Raman_mod = Raman_res_multiV(), return_mode = 'spectral'):
+def raman_res_interp(f_fit, npt_interpol = 2**14, Raman_mod = raman_res_multiV(), return_mode = 'spectral'):
     npt = npt_interpol
     tspan =  3000 * 1e-15 
 

@@ -5,7 +5,7 @@ from pathlib import Path
 from secrets import token_hex
 from warnings import warn
 
-from ...AuxFuncs.AuxFunc_load_save import stack_save
+from ...AuxFuncs.Load_save import stack_save
 
 class save_class_default():
 
@@ -62,8 +62,6 @@ class save_class_default():
             else:
                 text += '.{}'.format(self.save_vars.token)
         return text
-
-
 
     def _status_check(self):
         status_c = self.status_c

@@ -1,6 +1,9 @@
 import pickle as pickle 
 import tarfile as tarfile
 
+__all__ = ['tar_load_NumInt']
+
+
 def get_extension(name) -> str:
     return(name.split('.')[-1])
 
