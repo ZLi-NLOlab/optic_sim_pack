@@ -15,6 +15,15 @@ def unique_name(name, ref) -> str:
         return name + '_' + str(counter)
     else: return name
 
+def raw_save(data, name) -> None:
+    with open(name, 'wb') as handle:
+        pickle.dump(data, handle)
+
+def raw_load(name):
+    with open(name, 'rb') as handle:
+        data = pickle.load(handle)
+    return data 
+
 def stack_save(data, name):
     with open(name, 'ab') as handle:
         pickle.dump(data, handle)

@@ -1,7 +1,6 @@
 __pycache__/
 *.params
 ssf_save/ 
-various_length_params.pkl 
 sim_processing_mod.py
 osp_param_file_generator.py 
 sim_config_file.py  
@@ -10,3 +9,5 @@ sim_class_testing.py
 loading_test.py
 sim_class_launch_file.py 
 *.simout.*
+*_example.py 
+raman_ssf_base.py 

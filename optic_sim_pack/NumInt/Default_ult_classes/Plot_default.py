@@ -143,7 +143,6 @@ class plot_class_default():
 
         self.status_c.plot_started = True
         
-
     def plot_update(self):
         """default figure updator"""
 
@@ -173,7 +172,6 @@ class plot_class_default():
     def canvas_update(self):
         
         fig_vars = self.fig_vars
-        plt.pause(.01)
         fig_vars.figure.canvas.draw()
         fig_vars.canvas.flush_events()
         fig_vars.bg1 = fig_vars.canvas.copy_from_bbox(fig_vars.ax1.bbox)

@@ -62,7 +62,7 @@ class _integration_manager_base():
     def integration_step(self):
         raise NotImplementedError('Integration step not implemented; Sim terminated')
 
-    def int_manager_init_call(self): print('int init default')
+    def int_manager_init_call(self): pass 
 
     def pre_launch_processing(self): pass
 
@@ -78,7 +78,6 @@ class _integration_manager_base():
         print('special exception occured')
         print(format_exc())
             
-
     def integrate(self): 
         params = self.params_c
         status = self.status_c
@@ -103,18 +102,16 @@ class _integration_manager_base():
 
                 self.integration_step()
 
-                if not params.rt_counter%trig or status.force_proc:
+                if (not params.rt_counter%trig) or status.force_proc:
                     
                     if status.plotting and not params.rt_counter%params._P_intv:
                         self.plotting_processing()
                         plot_control.plot_update()
 
-
                     if status.saving and not params.rt_counter%params._S_intv:
                         self.saving_processing()
-                        save_control.save_update()
+                        save_control.save_update()  
 
-                
                     self.common_processing()
 
         except (KeyboardInterrupt, StopIteration):

@@ -42,7 +42,6 @@ class save_class_default():
                 handle.add(self.save_vars.folder_dir.name)
             if self.status_c.tar_remove:
                 self._clear_folder()
-
         else: pass 
         chdir(self.save_vars.cwd)
 
