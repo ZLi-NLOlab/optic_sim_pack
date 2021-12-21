@@ -11,3 +11,4 @@ sim_class_launch_file.py
 *.simout.*
 *_example.py 
 raman_ssf_base.py 
+change_log 

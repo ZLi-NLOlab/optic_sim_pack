@@ -31,6 +31,8 @@ class save_class_default():
         self.status_c.save_started = True
 
     def save_update(self):
+        if not self.status_c.save_started:
+            self.save_start()
         out_data = self.params_c.get_params_list(self.status_c.data_save_list)
         stack_save(out_data, self.get_name(extension = '.data', fold_name= False, token_extension= False))
 
@@ -42,7 +44,7 @@ class save_class_default():
                 handle.add(self.save_vars.folder_dir.name)
             if self.status_c.tar_remove:
                 self._clear_folder()
-        else: pass 
+        else: print('tar skipped') 
         chdir(self.save_vars.cwd)
 
     def get_name(self, name = None, extension = None, fold_name = True, token_extension = True):

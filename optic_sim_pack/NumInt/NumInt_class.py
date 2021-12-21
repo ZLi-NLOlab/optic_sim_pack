@@ -84,7 +84,9 @@ class NumInt_class():
     #    """Class variables initialisation"""
 
         # """integration method selection"""
-        if type(integration_method).__name__ == 'str':
+        if integration_method == None:
+            integration_method = type('empty_integration_class', (), {})
+        elif type(integration_method).__name__ == 'str':
             if integration_method == 'LLE_ssf':
                 integration_method = Method.numint_LLE_ssf_class
             elif integration_method == 'LLE_ikeda':

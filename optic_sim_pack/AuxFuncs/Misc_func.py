@@ -3,7 +3,7 @@ import pickle as pickle
 
 from os.path import isfile
 
-def cw_return(del0, alpha, P_in, gamma, L, theta):
+def cw_return(del0, alpha, P_in, gamma, L, theta) -> tuple:
     Delta = del0/alpha
     X = P_in * (gamma * L * theta)/alpha**3
     roots = np.roots([1, -2*Delta, 1+Delta**2, -X])
@@ -17,17 +17,17 @@ def cw_return(del0, alpha, P_in, gamma, L, theta):
 
     return sol_min, sol_max
     
-def find_nearst_condi(a,b,c):
+def find_nearst_condi(a,b,c) -> bool:
     if a < c <= b or b <= c < a:
         return True 
     else: return False 
 
-def find_nearst(val, array):
+def find_nearst(val, array) -> list:
     for n in range(len(array)-1):
         if find_nearst_condi(array[n], array[n+1], val):
             return [n, n+1]
 
-def fwhm_find(val, array):
+def fwhm_find(val, array) -> tuple:
     c_index = np.where(array == np.nanmax(array))[0][0]
     max_index = len(array) - 1
     lower = c_index

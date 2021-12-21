@@ -83,7 +83,7 @@ class _integration_manager_base():
         status = self.status_c
         plot_control = self.plot_control
         save_control = self.save_control
-        trig = min(params._S_intv, params._P_intv)
+        params.trig = min(params._S_intv, params._P_intv)
 
         if status.saving:
             if not status.save_started:
@@ -102,7 +102,7 @@ class _integration_manager_base():
 
                 self.integration_step()
 
-                if (not params.rt_counter%trig) or status.force_proc:
+                if (not params.rt_counter%params.trig) or status.force_proc:
                     
                     if status.plotting and not params.rt_counter%params._P_intv:
                         self.plotting_processing()
