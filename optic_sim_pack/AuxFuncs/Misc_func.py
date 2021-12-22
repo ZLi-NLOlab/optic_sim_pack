@@ -1,7 +1,7 @@
 import numpy as np 
 import pickle as pickle 
 
-from os.path import isfile
+from scipy.interpolate import interp1d
 
 def cw_return(del0, alpha, P_in, gamma, L, theta) -> tuple:
     Delta = del0/alpha
@@ -62,30 +62,17 @@ def fwhm_find(val, array) -> tuple:
 
     return [lower, upper]
                 
-def stack_load(name):
-    data_array = []
-    with open(name, 'rb') as handle:
-        try:
-            while True:
-                data_temp = pickle.load(handle)
-                data_array.append(data_temp)
-        except EOFError:
-            pass
-    
-    return data_array
+def find_zero(array, fine = True) -> np.ndarray:
+    zero_cross = []
+    for index in range(len(array) -1):
+        if np.sign(array[index]) != np.sign(array[index+1]):
+            zero_cross.append(index)
 
-def stack_load_multi(name):
-    data_array = []
-    counter = 0 
-    while isfile(name + '_{}'.format(counter)):
-        with open(name + '_{}'.format(counter), 'rb') as handle:
-            try:
-                while True:
-                    data_temp = pickle.load(handle)
-                    data_array.append(data_temp)
-            except EOFError:
-                pass
-        counter += 1
-    
-    return data_array
+    if fine or not len(zero_cross): pass 
+    else: 
+        for n_temp in range(len(zero_cross)):
+            index = zero_cross[n_temp]
+            inter_temp = interp1d(array[[index, index + 1]], [index, index + 1])
+            zero_cross[inter_temp(0)]
 
+    return np.asarray(zero_cross)

@@ -110,7 +110,7 @@ class NumInt_class():
                 'force_proc': force_proc,
                 'base_initialised': False,
                 'save_name': save_name,
-                'save_dir': Path(kargs['save_dir']) if 'save_dir' in kargs else Path.cwd(), 
+                'save_dir': Path(kargs['save_dir']).resolve() if 'save_dir' in kargs else Path.cwd(), 
                 'NumInt_method': integration_method.__name__, 
                 **({'params_save_list': integration_method.__dict__['default_params_save_list']} if 'default_params_save_list' in integration_method.__dict__ else {}),
                 **({'data_save_list': integration_method.__dict__['default_data_save_list']} if 'default_data_save_list' in integration_method.__dict__ else {}),

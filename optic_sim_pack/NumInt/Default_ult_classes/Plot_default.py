@@ -84,7 +84,7 @@ class plot_class_default():
         ax2.set_ylim(fig_vars.f_ylim)
 
         ax2_twinx = ax2.twinx(); ax2_twinx.set_zorder(0)
-        ax2_twinx.set_ylim(0,1)
+        ax2_twinx.set_ylim(-1.2,1.2)
 
         ax2.set_facecolor('none')
         status_text = ax1.annotate('', xy = (.005, .99), xycoords = 'axes fraction', va = 'top', ha = 'left', fontsize = 6)

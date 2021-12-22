@@ -13,7 +13,7 @@ class save_class_default():
         self.save_vars = self._save_vars_container()
         self.save_vars.token = token_hex(3)
         self.save_vars.cwd = Path.cwd()
-
+        
         self.status_c = status_c
         self.params_c = params_c
 
@@ -86,6 +86,9 @@ class save_class_default():
         if 'tar_remove' not in status_c:
             status_c.tar_remove = False 
         else: pass 
+
+        if not status_c.save_dir.exist():
+            raise FileNotFoundError('save directory does not exist')
         
     def _clear_folder(self):
         fold_dir = self.save_vars.folder_dir
