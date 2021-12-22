@@ -86,6 +86,9 @@ class save_class_default():
         if 'tar_remove' not in status_c:
             status_c.tar_remove = False 
         else: pass 
+
+        if not status_c.save_dir.exists():
+            raise FileNotFoundError('save directory does not exist')
         
     def _clear_folder(self):
         fold_dir = self.save_vars.folder_dir
