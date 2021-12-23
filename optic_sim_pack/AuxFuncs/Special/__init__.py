@@ -1,5 +1,5 @@
-from . import NumInt_plot as NumInt_plot
+from . import NumInt as NumInt
 
-from .NumInt_plot import * 
+from .NumInt import * 
 
-__all__ = NumInt_plot.__all__.copy()
+__all__ = NumInt.__all__.copy()
