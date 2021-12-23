@@ -10,9 +10,9 @@ from ...AuxFuncs.Load_save import stack_save
 class save_class_default():
 
     def __init__(self, params_c, status_c):
-        self.save_vars = self._save_vars_container()
-        self.save_vars.token = token_hex(3)
-        self.save_vars.cwd = Path.cwd()
+        self.config = self._save_vars_container()
+        self.config.token = token_hex(3)
+        self.config.cwd = Path.cwd()
 
         self.status_c = status_c
         self.params_c = params_c
@@ -22,30 +22,35 @@ class save_class_default():
     def save_start(self):
         status_c = self.status_c
 
-        self.save_vars.folder_dir = Path.joinpath(status_c.save_dir, self.get_name('folder'))
-        self.save_vars.folder_dir.mkdir()
-        chdir(self.save_vars.folder_dir)
+        self.config.folder_dir = Path.joinpath(status_c.save_dir, self.get_name('folder'))
+        self.config.folder_dir.mkdir()
+        chdir(self.config.folder_dir)
 
         stack_save({**self.params_c[self.status_c.params_save_list], **status_c['data_save_list']}, 
                 self.get_name(extension = '.params', fold_name= False, token_extension= False))
         self.status_c.save_started = True
 
     def save_update(self):
-        if not self.status_c.save_started:
-            self.save_start()
         out_data = self.params_c.get_params_list(self.status_c.data_save_list)
         stack_save(out_data, self.get_name(extension = '.data', fold_name= False, token_extension= False))
 
     def save_final(self):
-        if self.status_c.tar_final and str(self.save_vars.token) in self.save_vars.folder_dir.name:
+        if self.status_c.tar_final and str(self.config.token) in self.config.folder_dir.name:
             print('tarring output')
-            chdir(self.save_vars.folder_dir.parent)
+            chdir(self.config.folder_dir.parent)
             with tarfile.open(self.get_name(extension = '.simout.tar.gz', fold_name= False), 'w:gz') as handle:
-                handle.add(self.save_vars.folder_dir.name)
+                handle.add(self.config.folder_dir.name)
             if self.status_c.tar_remove:
                 self._clear_folder()
         else: print('tar skipped') 
-        chdir(self.save_vars.cwd)
+        self.config.folder_dir = self.status_c.save_dir
+        chdir(self.config.folder_dir)
+
+    def new_files_set(self):
+        """clean up old set, re-assign token and create new folder_dir """
+        self.save_final()
+        self.config.token = token_hex(3)
+        self.save_start()
 
     def get_name(self, name = None, extension = None, fold_name = True, token_extension = True):
         if name == None:
@@ -59,9 +64,9 @@ class save_class_default():
 
         if token_extension:
             if fold_name:
-                text += '_{}'.format(self.save_vars.token)
+                text += '_{}'.format(self.config.token)
             else:
-                text += '.{}'.format(self.save_vars.token)
+                text += '.{}'.format(self.config.token)
         return text
 
     def _status_check(self):
@@ -91,14 +96,14 @@ class save_class_default():
             raise FileNotFoundError('save directory does not exist')
         
     def _clear_folder(self):
-        fold_dir = self.save_vars.folder_dir
+        fold_dir = self.config.folder_dir
         if not self.status_c.save_started:
             warn('save not started; clear folder skipped', UserWarning, stacklevel= 2)
         elif not fold_dir.is_dir():
             warn('save dir path does not exist; clear folder skipped', UserWarning, stacklevel= 2)
-        elif str(self.save_vars.token) not in fold_dir.name:
+        elif str(self.config.token) not in fold_dir.name:
             warn('incorrect save dir path stored; clear folder skipped', UserWarning, stacklevel= 2) 
-        elif self.status_c.save_started and fold_dir.is_dir() and (str(self.save_vars.token) in fold_dir.name):
+        elif self.status_c.save_started and fold_dir.is_dir() and (str(self.config.token) in fold_dir.name):
             fold_list = [n for n in walk(fold_dir, topdown= False)]
             for fold_N in fold_list:
                 for file_N in fold_N[2]:

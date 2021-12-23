@@ -40,21 +40,21 @@ class plot_class_default():
         
         # TkAgg backend is used instead of Qt5Agg as the latter create strange issue with error catching
         use('TkAgg') 
-        self.fig_vars = self._fig_vars_container()
+        self.config = self._fig_vars_container()
         self.params_c = params_c 
         self.status_c = status_c
 
         if 'LLE' in status_c.NumInt_method:
-            CW_min, self.fig_vars.reference = cw_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
+            CW_min, self.config.reference = cw_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
         elif 'NLSE' in status_c.NumInt_method:
-            self.fig_vars.reference = params_c.P_in
+            self.config.reference = params_c.P_in
         else: 
-            self.fig_vars.reference = 10
+            self.config.reference = 10
 
-        self.fig_vars.t_xlim = (params_c.t_sample[0], params_c.t_sample[-1])
-        self.fig_vars.t_ylim = (-.05, 10)
-        self.fig_vars.f_xlim = (params_c.f_plot[0], params_c.f_plot[-1])
-        self.fig_vars.f_ylim = (-350, 10)
+        self.config.t_xlim = (params_c.t_sample[0], params_c.t_sample[-1])
+        self.config.t_ylim = (-.05, 10)
+        self.config.f_xlim = (params_c.f_plot[0], params_c.f_plot[-1])
+        self.config.f_ylim = (-350, 10)
         
         self._status_check()
         
@@ -62,7 +62,7 @@ class plot_class_default():
         """default figure constructor"""
 
         params = self.params_c
-        fig_vars = self.fig_vars
+        config = self.config
 
         fig = plt.figure('ssf_sim_update', figsize = (12, 8))
         gs = GridSpec(nrows = 2, ncols = 2, left = .05, right = .95,
@@ -77,11 +77,11 @@ class plot_class_default():
         
         ax1_twinx.plot(params.t_sample, params.E_in_prof, c = 'red')
 
-        ax1.set_xlim(fig_vars.t_xlim)
-        ax1.set_ylim(fig_vars.t_ylim)
+        ax1.set_xlim(config.t_xlim)
+        ax1.set_ylim(config.t_ylim)
         
-        ax2.set_xlim(fig_vars.f_xlim)
-        ax2.set_ylim(fig_vars.f_ylim)
+        ax2.set_xlim(config.f_xlim)
+        ax2.set_ylim(config.f_ylim)
 
         ax2_twinx = ax2.twinx(); ax2_twinx.set_zorder(0)
         ax2_twinx.set_ylim(-1.2,1.2)
@@ -89,7 +89,7 @@ class plot_class_default():
         ax2.set_facecolor('none')
         status_text = ax1.annotate('', xy = (.005, .99), xycoords = 'axes fraction', va = 'top', ha = 'left', fontsize = 6)
         params_text = ax1.annotate('', xy = (.99, .99), xycoords = 'axes fraction', va = 'top', ha = 'right', fontsize = 6)
-        ax1.annotate('y-scale referene = {:.3f} W'.format(fig_vars.reference), 
+        ax1.annotate('y-scale referene = {:.3f} W'.format(config.reference), 
             xy = (.01, .025), xycoords = 'axes fraction', va = 'bottom', ha = 'left', fontsize = 6)
         
         # """create wavelength grid if driving wavelength is available"""
@@ -126,20 +126,20 @@ class plot_class_default():
 
         fig.canvas.flush_events()
         
-        fig_vars.ax1 = ax1 
-        fig_vars.ax2 = ax2 
-        fig_vars.twins = (ax1_twinx, ax2_twinx)
-        fig_vars.lt = lt
-        fig_vars.lf = lf
-        fig_vars.status_text = status_text
-        fig_vars.params_text = params_text
-        fig_vars.animated_list = [
-            (fig_vars.ax1, lt), (fig_vars.ax1, status_text), (fig_vars.ax1, params_text),
-            (fig_vars.ax2, lf)]
-        fig_vars.bg1 = bg1
-        fig_vars.bg2 = bg2
-        fig_vars.figure = fig 
-        fig_vars.canvas = fig.canvas
+        config.ax1 = ax1 
+        config.ax2 = ax2 
+        config.twins = (ax1_twinx, ax2_twinx)
+        config.lt = lt
+        config.lf = lf
+        config.status_text = status_text
+        config.params_text = params_text
+        config.animated_list = [
+            (config.ax1, lt), (config.ax1, status_text), (config.ax1, params_text),
+            (config.ax2, lf)]
+        config.bg1 = bg1
+        config.bg2 = bg2
+        config.figure = fig 
+        config.canvas = fig.canvas
 
         self.status_c.plot_started = True
         
@@ -148,35 +148,35 @@ class plot_class_default():
 
         params = self.params_c
         status = self.status_c
-        fig_vars = self.fig_vars
+        config = self.config
 
         abs_E = np.abs(params.E)**2
         E_f = np.abs(np.fft.fftshift(np.fft.ifft(params.E)))**2
         E_f = 10 * np.log10(E_f)
 
-        fig_vars.lt.set_ydata(abs_E/self.fig_vars.reference)
-        fig_vars.lf.set_ydata(E_f)
-        fig_vars.status_text.set_text(status.print_status(status.status_plot_list))
-        fig_vars.params_text.set_text(status.plot_text_func(self))
+        config.lt.set_ydata(abs_E/self.config.reference)
+        config.lf.set_ydata(E_f)
+        config.status_text.set_text(status.print_status(status.status_plot_list))
+        config.params_text.set_text(status.plot_text_func(self))
 
-        fig_vars.canvas.restore_region(fig_vars.bg1)
-        fig_vars.canvas.restore_region(fig_vars.bg2)
+        config.canvas.restore_region(config.bg1)
+        config.canvas.restore_region(config.bg2)
 
-        for tup_temp in fig_vars.animated_list:
+        for tup_temp in config.animated_list:
             tup_temp[0].draw_artist(tup_temp[1])
 
-        fig_vars.canvas.blit(fig_vars.ax1.bbox)
-        fig_vars.canvas.blit(fig_vars.ax2.bbox)
-        fig_vars.canvas.flush_events()
+        config.canvas.blit(config.ax1.bbox)
+        config.canvas.blit(config.ax2.bbox)
+        config.canvas.flush_events()
 
     def canvas_update(self):
         
-        fig_vars = self.fig_vars
-        fig_vars.figure.canvas.draw()
-        fig_vars.canvas.flush_events()
-        fig_vars.bg1 = fig_vars.canvas.copy_from_bbox(fig_vars.ax1.bbox)
-        fig_vars.bg2 = fig_vars.canvas.copy_from_bbox(fig_vars.ax2.bbox)
-        fig_vars.canvas.flush_events()
+        config = self.config
+        config.figure.canvas.draw()
+        config.canvas.flush_events()
+        config.bg1 = config.canvas.copy_from_bbox(config.ax1.bbox)
+        config.bg2 = config.canvas.copy_from_bbox(config.ax2.bbox)
+        config.canvas.flush_events()
 
     def _status_check(self):
         status_c = self.status_c
