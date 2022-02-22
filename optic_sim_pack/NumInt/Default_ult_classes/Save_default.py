@@ -47,8 +47,9 @@ class save_class_default():
         chdir(self.config.folder_dir)
 
     def new_files_set(self):
-        """clean up old set, re-assign token and create new folder_dir """
-        self.save_final()
+        """if old set exist clean up old set, re-assign token and create new folder_dir """
+        if self.status_c.save_started:
+            self.save_final()
         self.config.token = token_hex(3)
         self.save_start()
 

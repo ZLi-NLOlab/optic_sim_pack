@@ -39,5 +39,6 @@ def phase_info_plot(self, ax, pp_scale = 1, pg_scale = 1, vline = True, p_plot =
 def save_final_roundtrips(self, N_rt):
     if not self.status_c.saving:
         if self.params_c.rt_counter == (self.params_c._M - N_rt * self.params_c._S_intv):
+            self.status_c.saving = True 
             if not self.status_c.save_started:
                 self.save_control.save_start()
