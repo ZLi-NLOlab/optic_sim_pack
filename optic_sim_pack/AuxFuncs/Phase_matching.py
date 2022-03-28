@@ -15,7 +15,7 @@ def delta_phi_calc(params):
     for n in betak.keys():
         if n > params.order: break
         dphi += betak[n] * params.L * f_sample**n/factorial(n)
-    dphi += 2 * cw_max * params.gamma* params.L - params.del0 - params.d * f_sample
+    dphi += 2 * cw_max * params.gamma* params.L - params.del0 - params.d * params.L * f_sample
 
     return dphi
 
