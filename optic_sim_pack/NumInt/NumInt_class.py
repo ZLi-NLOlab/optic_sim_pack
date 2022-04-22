@@ -132,7 +132,9 @@ class NumInt_class():
                 **({'termination_processing': kargs['termination_proc_call']} if 'termination_proc_call' in kargs else {}),
                 **({'plotting_processing': kargs['plot_proc_call']} if 'plot_proc_call' in kargs else {}),
                 **({'saving_processing': kargs['save_proc_call']} if 'save_proc_call' in kargs else {}),   
-                **({'pre_launch_processing': kargs['pre_launch_call']} if 'pre_launch_call' in kargs else {}),  
+                **({'pre_launch_processing': kargs['pre_launch_call']} if 'pre_launch_call' in kargs else {}),
+                **({'special_exception_handling': kargs['special_exception_handling']} if 'special_exception_handling' in kargs else {}),
+                **({'stopIter_exception_handling': kargs['stopIter_exception_handling']} if 'stopIter_exception_handling' in kargs else {})  
             }
         )
         self.integration_manager = self._integration_manager_class()

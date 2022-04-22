@@ -74,6 +74,9 @@ class _integration_manager_base():
 
     def termination_processing(self): pass 
 
+    def stopIter_exception_handling(self):
+        print('StopIter Exit')
+
     def special_exception_handling(self, excp):
         print('special exception occured')
         print(format_exc())
@@ -115,7 +118,7 @@ class _integration_manager_base():
                     self.common_processing()
 
         except (KeyboardInterrupt, StopIteration):
-            print('stop iteration exit') 
+            self.stopIter_exception_handling() 
 
         except Exception as excp:
             self.special_exception_handling(excp)

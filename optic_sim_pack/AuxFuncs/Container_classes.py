@@ -6,7 +6,7 @@ class _container_base():
     def __init__(self, *args, **kargs):
         self.set_params(*args, **kargs)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> dict:
         if type(key).__name__ == 'str':
             return {key: vars(self)[key]}
 
@@ -15,7 +15,15 @@ class _container_base():
             return dict([(_key_temp, vars(self)[_key_temp]) for _key_temp in key])   
         
         else: raise TypeError
-        
+
+    def __call__(self, key):
+        if type(key).__name__ != 'str': raise TypeError
+        else:
+            return vars(self)[key]
+
+    def __iter__(self):
+        return iter(vars(self))
+
     def set_params(self, *args, **kargs):
         for args_temp in args:
             if type(args_temp) != dict:
@@ -41,9 +49,6 @@ class _container_base():
 
             delattr(self, arg_temp)
 
-    def __iter__(self):
-        return iter(vars(self))
-
 class params_container(_container_base):
 
     def get_params_list(self, params_list) -> list:
@@ -64,7 +69,7 @@ class status_container(_container_base):
         else:
             self.text_list = text_list
     
-    def print_status(self, status_list = None):
+    def print_status(self, status_list = None) -> str:
         text = ""
         if status_list == None:
             for n in self.text_list:

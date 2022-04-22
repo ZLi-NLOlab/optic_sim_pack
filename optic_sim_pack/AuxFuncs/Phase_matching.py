@@ -5,7 +5,7 @@ from math import factorial
 
 c = 3e8
 
-def delta_phi_calc(params):
+def delta_phi_calc(params, linear = False, desync = True):
     betak = params.betak 
     f_sample = params.f_plot * 2 * np.pi
 
@@ -15,7 +15,13 @@ def delta_phi_calc(params):
     for n in betak.keys():
         if n > params.order: break
         dphi += betak[n] * params.L * f_sample**n/factorial(n)
-    dphi += 2 * cw_max * params.gamma* params.L - params.del0 - params.d * params.L * f_sample
+    
+    dphi += - params.del0 
+    
+    if desync:
+        dphi += - params.d * params.L * f_sample
+    if not linear:
+        dphi += 2 * cw_max * params.gamma * params.L
 
     return dphi
 

@@ -28,6 +28,7 @@ class save_class_default():
 
         stack_save({**self.params_c[self.status_c.params_save_list], **status_c['data_save_list']}, 
                 self.get_name(extension = '.params', fold_name= False, token_extension= False))
+            
         self.status_c.save_started = True
 
     def save_update(self):
@@ -45,6 +46,7 @@ class save_class_default():
         else: print('tar skipped') 
         self.config.folder_dir = self.status_c.save_dir
         chdir(self.config.folder_dir)
+        self.status_c.save_started = False
 
     def new_files_set(self):
         """if old set exist clean up old set, re-assign token and create new folder_dir """
