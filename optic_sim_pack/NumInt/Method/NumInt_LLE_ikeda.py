@@ -43,7 +43,7 @@ class numint_LLE_ikeda_class():
 
     def integration_step(self):
         params = self.params_c
-        params.E = params.E * np.exp(-params.alpha) * np.exp(-1j * del0) + params.E_in_mag * params.E_in_prof
+        params.E = params.E * np.exp(-params.alpha) * np.exp(-1j * params.del0) + params.E_in_mag * params.E_in_prof
 
         for N_temp in range(params._N):
             abs_E = np.abs(params.E)**2
