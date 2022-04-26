@@ -39,7 +39,11 @@ class plot_class_default():
     def __init__(self, params_c, status_c):
         
         # TkAgg backend is used instead of Qt5Agg as the latter create strange issue with error catching
-        use('TkAgg') 
+        try:
+            use('TkAgg') 
+        except ImportError:
+            print('Import Error in Plot_defualt, TkAgg passed')
+        
         self.config = self._fig_vars_container()
         self.params_c = params_c 
         self.status_c = status_c
