@@ -7,7 +7,7 @@ from math import factorial
 class numint_NLSE_ssf_class():
 
     default_params_save_list = [
-        'finesse', 'gamma', 'fR', 'RR_tau', 'RR_method',
+        'alpha', 'gamma', 'fR', 'RR_tau', 'RR_method',
         'P_in', 'E_in_prof', 'd', 'order', 'betak', 
         'npt', 'tspan', '_M', '_N', '_S_intv', '_P_intv']
 
