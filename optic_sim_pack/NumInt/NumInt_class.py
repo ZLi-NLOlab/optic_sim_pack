@@ -157,9 +157,9 @@ class NumInt_class():
         elif type(E_in_prof).__name__ == "function":
             self.params_c.E_in_prof = E_in_prof(self.params_c) 
         elif type(E_in_prof).__name__ == "list":
-            self.params_c.E_in_prof = np.asarray(E_init)
+            self.params_c.E_in_prof = np.asarray(E_in_prof)
         elif type(E_in_prof).__name__ == "ndarray":
-            self.params_c.E_in_prof = E_init
+            self.params_c.E_in_prof = E_in_prof
         else:
             raise TypeError('Invalid E_init type')    
 
