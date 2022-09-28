@@ -49,7 +49,11 @@ class plot_class_default():
         self.status_c = status_c
 
         if 'LLE' in status_c.NumInt_method:
-            CW_min, self.config.reference = cw_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
+            try:
+                CW_min, self.config.reference = cw_return(params_c.del0, params_c.alpha, params_c.P_in, params_c.gamma, params_c.L, params_c.theta1)
+            except ZeroDivisionError:
+                print('Error in calculating CW, 10 W used as reference')
+                self.config.reference = 10
         elif 'NLSE' in status_c.NumInt_method:
             self.config.reference = params_c.P_in
         else: 
