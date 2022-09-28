@@ -9,8 +9,6 @@ def delta_phi_calc(params, linear = False, desync = True):
     betak = params.betak 
     f_sample = params.f_plot * 2 * np.pi
 
-    cw_min, cw_max = cw_return(params.del0, params.alpha, params.P_in, params.gamma, params.L, params.theta1)
-
     dphi = np.zeros(len(f_sample))
     for n in betak.keys():
         if n > params.order: break
@@ -21,6 +19,7 @@ def delta_phi_calc(params, linear = False, desync = True):
     if desync:
         dphi += - params.d * params.L * f_sample
     if not linear:
+        cw_min, cw_max = cw_return(params.del0, params.alpha, params.P_in, params.gamma, params.L, params.theta1)
         dphi += 2 * cw_max * params.gamma * params.L
 
     return dphi
