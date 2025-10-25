@@ -1,0 +1,1 @@
+This is a python codes for simulating Kerr nonlinear phenomena. The model is the generalised Lugiato-Lefever equation with stimulated Raman scattering. Feel free to use this code for your project, but please cite this article https://doi.org/10.1038/s41566-023-01303-z.   
